@@ -27,12 +27,7 @@ public class Tail implements Runnable {
                 read();
             } catch (IOException e) { // cannot open file
                 System.out.println(e);
-                try {
-                    Thread.sleep(SLEEP);
-                } catch (InterruptedException i) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+                System.exit(255);
             }
         }
     }
@@ -54,14 +49,9 @@ public class Tail implements Runnable {
         @Override
         public void handle(String line) {
             try {
-                logInputQueue.add(line);
-            } catch (IllegalStateException j) {
-                System.out.println("logInputQueue is full, waiting");
-                try {
-                    Thread.sleep(QSLEEP);
-                } catch (InterruptedException i) {
-                    Thread.currentThread().interrupt();
-                }
+                logInputQueue.put(line);
+            } catch (InterruptedException m) {
+                System.out.println(m + " : while adding new line to queue");
             }
         }
     }

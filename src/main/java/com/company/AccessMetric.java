@@ -20,6 +20,7 @@ public class AccessMetric {
     public adType types = new adType();
     public responseCode codes = new responseCode();
 
+    /*
     public AccessMetric copyOf() {
         AccessMetric n = new AccessMetric();
         n.timestamp = timestamp;
@@ -32,7 +33,7 @@ public class AccessMetric {
         n.types = (adType) types.clone();
         n.codes = (responseCode) codes.clone();
         return n;
-    }
+    } */
 
     public void insertTimestamp(String s) throws ParseException {
         DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");

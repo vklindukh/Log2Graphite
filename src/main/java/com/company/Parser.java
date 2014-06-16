@@ -12,14 +12,12 @@ public class Parser implements Runnable {
     private AccessMetric currentMetric;
 
     private final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
-    private Pattern logPattern;
-
-    private final int MAXMATCHEDFIELD = 20;
+    private Pattern logPattern = Pattern.compile(logEntryPattern);
+    private Matcher matcher = logPattern.matcher("");
 
     public Parser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m) {
         logInputQueue = q;
         logInputMetric = m;
-        logPattern = Pattern.compile(logEntryPattern);
     }
 
     public void run() {
@@ -54,11 +52,12 @@ public class Parser implements Runnable {
     }
 
     private boolean parse(String s) {
-        Matcher matcher = logPattern.matcher(s);
-        String[] matchedField = new String[MAXMATCHEDFIELD];
+        matcher.reset(s);
+        final int MAX_MATCHED_FIELDS = 20;
+        String[] matchedField = new String[MAX_MATCHED_FIELDS];
 
         int matchedFieldCounter = 0;
-        while (matcher.find() && (matchedFieldCounter < MAXMATCHEDFIELD)) {
+        while (matcher.find() && (matchedFieldCounter < MAX_MATCHED_FIELDS)) {
             matchedFieldCounter++;
             matchedField[matchedFieldCounter] = matcher.group();
         }
@@ -88,15 +87,9 @@ public class Parser implements Runnable {
 
     private void push() {
         try {
-            logInputMetric.add(currentMetric);
-            //System.out.println("pushed");
-        } catch (IllegalStateException j) {
-            System.out.println(j + " : logInputMetric is full");
-            try {
-                Thread.sleep(PSLEEP);
-            } catch (InterruptedException i) {
-                Thread.currentThread().interrupt();
-            }
+            logInputMetric.put(currentMetric);
+        } catch (InterruptedException m) {
+            System.out.println(m + " : while adding parsed metric to pool");
         }
     }
 }

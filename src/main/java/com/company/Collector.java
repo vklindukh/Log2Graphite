@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Collector implements Runnable {
+public class Collector {
 
     private static final int CSLEEP = 1000;
     private static final int WAIT_BEFORE_UPLOAD = 120; // upload metric older then 120 seconds
@@ -17,11 +17,16 @@ public class Collector implements Runnable {
     private static final int graphiteServerPort = 2003;
     private static String graphiteMetricBase = "access";
 
-    public Collector (BlockingQueue<AccessMetric> m, String s) throws UnknownHostException {
-        logInputMetric = m;
+    public Collector (BlockingQueue<AccessMetric> metrics, String s) {
+        logInputMetric = metrics;
         outputMetric = new AccessMetricHashMap();
         graphiteServer = s;
-        graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
+        try {
+            graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException m) {
+            System.out.println(m);
+            System.exit(255);
+        }
     }
 
     public void run() {
