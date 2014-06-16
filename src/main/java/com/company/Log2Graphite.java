@@ -14,12 +14,12 @@ public class Log2Graphite {
         cli.parse(args);
 
         // run tailer
-        Runnable rTailer = new Tail(cli.accessLogPath(), cli.fromEnd(), logInputQueue);
-        new Thread(rTailer).start();
+        ExecutorService execTailer = Executors.newFixedThreadPool(1);
+        execTailer.execute(new Tail(cli.accessLogPath(), cli.fromEnd(), logInputQueue));
 
         // run parsers
-        ExecutorService exec = Executors.newFixedThreadPool(cli.ParserThreads());
-        exec.execute(new Parser(logInputQueue, logInputMetric));
+        ExecutorService execParser = Executors.newFixedThreadPool(cli.ParserThreads());
+        execParser.execute(new Parser(logInputQueue, logInputMetric));
 
         // run collector
         Collector collector = new Collector(logInputMetric, cli.graphiteHost());
