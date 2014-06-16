@@ -1,0 +1,5 @@
+.idea
+target
+log2graphite.iml
+!input/1.log
+input
