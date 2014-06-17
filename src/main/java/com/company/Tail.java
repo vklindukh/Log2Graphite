@@ -6,11 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
-public class Tail implements Runnable {
-
-    private static final int SLEEP = 1000;
-    private static final int QSLEEP = 500;
-
+public class Tail {
     private static String logFile = null;
     private static BlockingQueue<String> logInputQueue;
     private static boolean tailerEnd = false;
@@ -22,27 +18,8 @@ public class Tail implements Runnable {
     }
 
     public void run() {
-        while (true) {
-            try {
-                read();
-            } catch (IOException e) { // cannot open file
-                System.out.println(e);
-                System.exit(255);
-            }
-        }
-    }
-
-    private void read() throws IOException {
         MyListener listener = new MyListener();
-        Tailer tailer = Tailer.create(new File(logFile), listener, SLEEP, tailerEnd);
-        while (true) {
-            try {
-                Thread.sleep(SLEEP);
-            } catch (InterruptedException i) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
+        Tailer.create(new File(logFile), listener, 1000, tailerEnd);
     }
 
     public class MyListener extends TailerListenerAdapter {

@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AccessMetric {
@@ -39,6 +37,26 @@ public class AccessMetric {
         DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");
         Date d =  df.parse(s.substring(0, 19) + "00" + s.substring(21));
         timestamp = d.getTime() / 1000;
+    }
+
+    public boolean put(String[] matchedField, int matchedFieldSize) {
+        try {
+            if (matchedFieldSize == 16) { // probably known access.log format
+                insertTimestamp(matchedField[4] + matchedField[5]);
+                min = Short.parseShort(matchedField[4].substring(16, 18));
+                size = Integer.parseInt(matchedField[8].replace(" ", ""));
+                request_time = Float.parseFloat(matchedField[14].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[14].replace("\"", ""));
+                upstream_time = Float.parseFloat(matchedField[15].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[15].replace("\"", ""));
+                methods.insert(matchedField[6]);
+                types.insert(matchedField[6]);
+                codes.put(Integer.parseInt(matchedField[7].replace(" ", "")), 1L);
+                requests = 1;
+                return true;
+            }
+        } catch (Exception m) {
+            return false;
+        }
+        return false;
     }
 
     public ConcurrentHashMap<String, String> format() {

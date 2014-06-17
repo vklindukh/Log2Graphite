@@ -8,11 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Collector {
 
-    private static final int CSLEEP = 1000;
     private static final int WAIT_BEFORE_UPLOAD = 120; // upload metric older then 120 seconds
 
     private static BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricHashMap outputMetric;
+
     private String graphiteServer;
     private static final int graphiteServerPort = 2003;
     private static String graphiteMetricBase = "access";
@@ -37,11 +37,8 @@ public class Collector {
                 outputMetric.update(metric);
                 upload();
             } catch (InterruptedException m) {
-                try {
-                    Thread.sleep(CSLEEP);
-                } catch (InterruptedException i) {
-                    Thread.currentThread().interrupt();
-                }
+                System.out.println(m);
+                System.exit(255);
             }
         }
     }
