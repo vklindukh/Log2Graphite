@@ -108,7 +108,8 @@ public class AccessMetric {
     }
 
     public String toString() {
-        String s = "timestamp : " + Long.toString(timestamp) + System.getProperty("line.separator");
+        Date time=new Date(timestamp*1000);
+        String s = "  timestamp : " + Long.toString(timestamp) + " [ " + time + " ]" + System.getProperty("line.separator");
         s += "  min : " + Short.toString(min) + System.getProperty("line.separator");
         s += "  requests : " + Long.toString(requests) + System.getProperty("line.separator");
         s += "  size : "  + Long.toString(size) + System.getProperty("line.separator");
