@@ -1,17 +1,27 @@
 package com.company;
 
 import org.apache.commons.cli.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.net.UnknownHostException;
 import java.util.concurrent.*;
 
 public class Log2Graphite {
+    private static final Logger LOG = Logger.getLogger(Log2Graphite.class);
 
     private static BlockingQueue<String> logInputQueue = new ArrayBlockingQueue<String>(10240);
     private static BlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(1024);
 
     public static void main(String[] args) {
+
         Args cli = new Args();
-        cli.parse(args);
+        try {
+            cli.parse(args);
+        } catch (ParseException m) {
+            System.err.println(m);
+            System.exit(255);
+        }
 
         // run tailer
         Tail tailer = new Tail(cli.accessLogPath(), cli.fromEnd(), logInputQueue);
@@ -22,7 +32,11 @@ public class Log2Graphite {
         execParser.execute(new Parser(logInputQueue, logInputMetric));
 
         // run collector
-        Collector collector = new Collector(logInputMetric, cli.graphiteHost());
-        collector.run();
+        try {
+            Collector collector = new Collector(logInputMetric, cli.graphiteHost());
+            collector.run();
+        } catch (UnknownHostException | InterruptedException m) {
+            LOG.fatal(m);
+        }
     }
 }

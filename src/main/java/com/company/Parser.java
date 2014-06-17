@@ -1,5 +1,9 @@
 package com.company;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
+
+import java.text.ParseException;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.*;
 
@@ -7,6 +11,7 @@ public class Parser implements Runnable {
 
     private static BlockingQueue<String> logInputQueue;
     private static BlockingQueue<AccessMetric> logInputMetric;
+    private static final Logger LOG = Logger.getLogger(Parser.class);
 
     final int MAX_MATCHED_FIELDS = 20;
     String[] matchedField = new String[MAX_MATCHED_FIELDS];
@@ -30,7 +35,7 @@ public class Parser implements Runnable {
                 currentLine = logInputQueue.take();
                 process(currentLine);
             } catch (InterruptedException m) {
-                System.out.println(m);
+                LOG.fatal(m);
                 System.exit(255);
             }
         }
@@ -44,8 +49,8 @@ public class Parser implements Runnable {
                     push(currentMetric);
                 }
             }
-        } catch (Exception m) {
-            System.out.println(m + " while parsing : " + s);
+        } catch (ParseException m) {
+            LOG.error(m + " while parsing : " + s);
         }
     }
 
@@ -65,7 +70,7 @@ public class Parser implements Runnable {
         try {
             logInputMetric.put(c);
         } catch (InterruptedException m) {
-            System.out.println(m + " : while pushing metric to queue");
+            LOG.fatal(m + " while pushing metric to queue");
             System.exit(255);
         }
     }

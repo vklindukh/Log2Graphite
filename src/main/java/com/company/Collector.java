@@ -1,5 +1,7 @@
 package com.company;
 
+import org.apache.log4j.Logger;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
@@ -7,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Collector {
+    private static final Logger LOG = Logger.getLogger(Collector.class);
 
     private static final int WAIT_BEFORE_UPLOAD = 120; // upload metric older then 120 seconds
 
@@ -17,33 +20,23 @@ public class Collector {
     private static final int graphiteServerPort = 2003;
     private static String graphiteMetricBase = "access";
 
-    public Collector (BlockingQueue<AccessMetric> metrics, String s) {
+    public Collector (BlockingQueue<AccessMetric> metrics, String s) throws UnknownHostException {
         logInputMetric = metrics;
         outputMetric = new AccessMetricHashMap();
         graphiteServer = s;
-        try {
-            graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException m) {
-            System.out.println(m);
-            System.exit(255);
-        }
+        graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
     }
 
-    public void run() {
+    public void run() throws InterruptedException {
         AccessMetric metric;
         while (true) {
-            try {
-                metric = logInputMetric.take();
-                outputMetric.update(metric);
-                upload();
-            } catch (InterruptedException m) {
-                System.out.println(m);
-                System.exit(255);
-            }
+            metric = logInputMetric.take();
+            outputMetric.update(metric);
+            upload();
         }
     }
 
-    private void upload() {
+    private void upload() throws InterruptedException {
         if (outputMetric.maxUpdatedTime > (outputMetric.lastUploadTime + WAIT_BEFORE_UPLOAD)) { // upload all <= maxUpdatedTime - 120
             Long newLastUploadTime = 0L;
 
@@ -54,17 +47,13 @@ public class Collector {
                     try {
                         AccessMetric metric = outputMetric.get(key);
                         toGraphite(metric);
-                        System.out.println("upload : " + metric);
+                        LOG.info("upload :" + System.getProperty("line.separator") + metric);
                         if (key > newLastUploadTime)
                             newLastUploadTime = key;
                         outputMetric.remove(key);
                     } catch (IOException m) {
-                        System.out.println(m + " while sending metric to " + graphiteServer);
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException i) {
-                            Thread.currentThread().interrupt();
-                        }
+                        LOG.error(m + " while sending metric to " + graphiteServer);
+                        Thread.sleep(500);
                     }
                 }
             }

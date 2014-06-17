@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
+import org.apache.log4j.Logger;
 
 public class Tail {
+    private static final Logger LOG = Logger.getLogger(Tail.class);
+
     private static String logFile = null;
     private static BlockingQueue<String> logInputQueue;
     private static boolean tailerEnd = false;
@@ -28,7 +31,8 @@ public class Tail {
             try {
                 logInputQueue.put(line);
             } catch (InterruptedException m) {
-                System.out.println(m + " : while adding new line to queue");
+               LOG.fatal(m + " : while adding new line to queue");
+               System.exit(255);
             }
         }
     }

@@ -42,15 +42,14 @@ public class Args {
         options.addOption(graphitehost);
     }
 
-    public void parse(String[] args) {
+    public void parse(String[] args) throws ParseException {
         try {
             CommandLineParser parser = new BasicParser();
             cmd = parser.parse(options, args);
         } catch (ParseException m) {
-            System.out.println(m);
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Log2Graphite", options);
-            System.exit(255);
+            throw new ParseException(m.toString());
         }
     }
 
