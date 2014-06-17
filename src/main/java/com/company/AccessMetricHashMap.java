@@ -1,27 +1,20 @@
 package com.company;
 
-import java.util.HashMap;
 import java.util.concurrent.*;
 
 public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
 
-    public long maxUpdatedTime = 0;
-    public long lastUploadTime = 0;
+    private long maxUpdatedTime = 0;
+    private long lastUploadTime = 0;
 
     public void update(AccessMetric m) {
-        if (containsKey(m.timestamp)) { // update  metric
-            AccessMetric n = get(m.timestamp);
-            n.requests += m.requests;
-            n.size += m.size;
-            n.request_time += m.request_time;
-            n.upstream_time += m.upstream_time;
-            n.methods.update(m.methods);
-            n.types.update(m.types);
-            n.codes.update(m.codes);
+        if (containsKey(m.getTimestamp())) { // update  metric
+            get(m.getTimestamp()).update(m);
         } else
-            put(m.timestamp, m);
-        if (m.timestamp > maxUpdatedTime)
-            maxUpdatedTime = m.timestamp;
+            put(m.getTimestamp(), m);
+
+        if (m.getTimestamp() > maxUpdatedTime)
+            maxUpdatedTime = m.getTimestamp();
     }
 
     public String toString() {
@@ -30,5 +23,17 @@ public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
             s += get(key).toString();
         }
         return s;
+    }
+
+    public long getMaxUpdatedTime() {
+        return maxUpdatedTime;
+    }
+
+    public long getLastUploadTime() {
+        return lastUploadTime;
+    }
+
+    public void setLastUploadTime(long lastUploadTime) {
+        this.lastUploadTime = lastUploadTime;
     }
 }

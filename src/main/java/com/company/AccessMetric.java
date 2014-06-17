@@ -6,17 +6,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AccessMetric {
-    public long timestamp = 0;
-    public short min = 0;
-    public long requests = 0;
-    public long size = 0;
-    public float request_time = 0;
-    public float upstream_time = 0;
-    public HttpMethod methods = new HttpMethod();
-    public adType types = new adType();
-    public responseCode codes = new responseCode();
+    private long timestamp = 0;
+    private short min = 0;
+    private long requests = 0;
+    private long size = 0;
+    private float request_time = 0;
+    private float upstream_time = 0;
+    private HttpMethod methods = new HttpMethod();
+    private adType types = new adType();
+    private responseCode codes = new responseCode();
+
+    private final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
+    private Pattern logPattern = Pattern.compile(logEntryPattern);
+    private Matcher matcher = logPattern.matcher("");
 
     /*
     public AccessMetric copyOf() {
@@ -33,26 +39,53 @@ public class AccessMetric {
         return n;
     } */
 
-    public void insertTimestamp(String s) throws ParseException {
-        DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");
-        Date d =  df.parse(s.substring(0, 19) + "00" + s.substring(21));
-        timestamp = d.getTime() / 1000;
+
+    public boolean parse(String s) throws ParseException {
+        final int MAX_MATCHED_FIELDS = 20;
+        String[] matchedField = new String[MAX_MATCHED_FIELDS];
+        int matchedFieldCounter = 0;
+
+        matcher.reset(s);
+
+        while (matcher.find() && (matchedFieldCounter < MAX_MATCHED_FIELDS)) {
+            matchedFieldCounter++;
+            matchedField[matchedFieldCounter] = matcher.group();
+        }
+
+        try {
+            if (matchedFieldCounter == 16) { // probably known access.log format
+                if (!insertTimestamp(matchedField[4] + matchedField[5])) {
+                    return false;
+                }
+                min = Short.parseShort(matchedField[4].substring(16, 18));
+                size = Integer.parseInt(matchedField[8].replace(" ", ""));
+                request_time = Float.parseFloat(matchedField[14].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[14].replace("\"", ""));
+                upstream_time = Float.parseFloat(matchedField[15].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[15].replace("\"", ""));
+                methods.insert(matchedField[6]);
+                types.insert(matchedField[6]);
+                codes.put(Integer.parseInt(matchedField[7].replace(" ", "")), 1L);
+                requests = 1;
+                return true;
+            }
+        } catch (NumberFormatException m) {
+            throw new ParseException(m.toString(), 0);
+        }
+
+        return false;
     }
 
-    public boolean put(String[] matchedField, int matchedFieldSize) throws ParseException {
-        if (matchedFieldSize == 16) { // probably known access.log format
-            insertTimestamp(matchedField[4] + matchedField[5]);
-            min = Short.parseShort(matchedField[4].substring(16, 18));
-            size = Integer.parseInt(matchedField[8].replace(" ", ""));
-            request_time = Float.parseFloat(matchedField[14].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[14].replace("\"", ""));
-            upstream_time = Float.parseFloat(matchedField[15].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[15].replace("\"", ""));
-            methods.insert(matchedField[6]);
-            types.insert(matchedField[6]);
-            codes.put(Integer.parseInt(matchedField[7].replace(" ", "")), 1L);
-            requests = 1;
-            return true;
+    public synchronized boolean update(AccessMetric n) {
+        if (this.timestamp != n.timestamp) {
+            return false;
         }
-        return false;
+        this.requests += n.requests;
+        this.size += n.size;
+        this.request_time += n.request_time;
+        this.upstream_time += n.upstream_time;
+        this.methods.update(n.methods);
+        this.types.update(n.types);
+        this.codes.update(n.codes);
+        return true;
     }
 
     public ConcurrentHashMap<String, String> format() {
@@ -60,7 +93,7 @@ public class AccessMetric {
 
         metricFormatted.put("timestamp", Long.toString(timestamp));
         metricFormatted.put("requests", Long.toString(requests));
-        metricFormatted.put("size", Float.toString((float)size / requests));
+        metricFormatted.put("size", Long.toString(size / requests));
         metricFormatted.put("request_time", Float.toString(request_time / requests));
         metricFormatted.put("upstream_time", Float.toString(upstream_time / requests));
 
@@ -87,7 +120,21 @@ public class AccessMetric {
         return s;
     }
 
-    public class HttpMethod extends HashMapUpdater<String> {
+    public long getTimestamp() {
+        return this.timestamp;
+    }
+
+    private boolean insertTimestamp(String s) throws ParseException {
+        if (s.length() < 23) {
+            return false;
+        }
+        DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");
+        Date d =  df.parse(s.substring(0, 19) + "00" + s.substring(21));
+        timestamp = d.getTime() / 1000;
+        return true;
+    }
+
+    private class HttpMethod extends HashMapUpdater<String> {
         public void insert(String s) {
             String key = "OTHER_METHOD";
             if (s.substring(1,6).equals("POST "))
@@ -98,7 +145,7 @@ public class AccessMetric {
         }
     }
 
-    public class adType extends HashMapUpdater<String> {
+    private class adType extends HashMapUpdater<String> {
         public void insert(String s) {
             String key = "type_unknown";
             int position = s.indexOf(" ");
@@ -112,19 +159,19 @@ public class AccessMetric {
         }
     }
 
-    public class responseCode extends HashMapUpdater<Integer> {
+    private class responseCode extends HashMapUpdater<Integer> {
 
     }
 
-    public class HashMapUpdater<K> extends HashMap<K, Long> {
-        public void update (K key) {
+    private class HashMapUpdater<K> extends HashMap<K, Long> {
+        void update (K key) {
             if (containsKey(key))
                 put(key, get(key) + 1);
             else
                 put(key, 1L);
         }
 
-        public void update(HashMapUpdater<K> n) {
+        void update(HashMapUpdater<K> n) {
             for (K key : n.keySet()) {
                 if (containsKey(key)) {
                     put(key, get(key) + n.get(key));

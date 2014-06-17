@@ -1,11 +1,8 @@
 package com.company;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
-
 import java.text.ParseException;
 import java.util.concurrent.BlockingQueue;
-import java.util.regex.*;
 
 public class Parser implements Runnable {
 
@@ -13,15 +10,7 @@ public class Parser implements Runnable {
     private static BlockingQueue<AccessMetric> logInputMetric;
     private static final Logger LOG = Logger.getLogger(Parser.class);
 
-    final int MAX_MATCHED_FIELDS = 20;
-    String[] matchedField = new String[MAX_MATCHED_FIELDS];
-    int matchedFieldCounter = 0;
-
     private AccessMetric currentMetric;
-
-    private final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
-    private Pattern logPattern = Pattern.compile(logEntryPattern);
-    private Matcher matcher = logPattern.matcher("");
 
     public Parser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m) {
         logInputQueue = q;
@@ -43,27 +32,13 @@ public class Parser implements Runnable {
 
     private void process(String s) {
         try {
-            if (parse(s)) {
-                currentMetric = new AccessMetric();
-                if (currentMetric.put(matchedField, matchedFieldCounter)) {
-                    push(currentMetric);
-                }
+            currentMetric = new AccessMetric();
+            if ( currentMetric.parse(s)) {
+                push(currentMetric);
             }
         } catch (ParseException m) {
             LOG.error(m + " while parsing : " + s);
         }
-    }
-
-    private boolean parse(String s) {
-        matcher.reset(s);
-        matchedFieldCounter = 0;
-
-        while (matcher.find() && (matchedFieldCounter < MAX_MATCHED_FIELDS)) {
-            matchedFieldCounter++;
-            matchedField[matchedFieldCounter] = matcher.group();
-        }
-
-        return (matchedFieldCounter != 0);
     }
 
     private void push(AccessMetric c) {

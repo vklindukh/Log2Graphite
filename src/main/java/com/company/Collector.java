@@ -11,11 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Collector {
     private static final Logger LOG = Logger.getLogger(Collector.class);
 
-    private static final int WAIT_BEFORE_UPLOAD = 120; // upload metric older then 120 seconds
-
     private static BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricHashMap outputMetric;
 
+    private static final int WAIT_BEFORE_UPLOAD = 120; // upload metric older then 120 seconds
     private String graphiteServer;
     private static final int graphiteServerPort = 2003;
     private static String graphiteMetricBase = "access";
@@ -37,13 +36,13 @@ public class Collector {
     }
 
     private void upload() throws InterruptedException {
-        if (outputMetric.maxUpdatedTime > (outputMetric.lastUploadTime + WAIT_BEFORE_UPLOAD)) { // upload all <= maxUpdatedTime - 120
+        if (outputMetric.getMaxUpdatedTime() > (outputMetric.getLastUploadTime() + WAIT_BEFORE_UPLOAD)) { // upload all <= maxUpdatedTime - 120
             Long newLastUploadTime = 0L;
 
             for (Long key : outputMetric.keySet()) {
-                if (key <= outputMetric.lastUploadTime)
+                if (key <= outputMetric.getLastUploadTime())
                     outputMetric.remove(key);
-                else if (key <= (outputMetric.maxUpdatedTime - WAIT_BEFORE_UPLOAD)) {
+                else if (key <= (outputMetric.getMaxUpdatedTime() - WAIT_BEFORE_UPLOAD)) {
                     try {
                         AccessMetric metric = outputMetric.get(key);
                         toGraphite(metric);
@@ -58,8 +57,8 @@ public class Collector {
                 }
             }
 
-            if (newLastUploadTime > outputMetric.lastUploadTime)
-                outputMetric.lastUploadTime = newLastUploadTime;
+            if (newLastUploadTime > outputMetric.getLastUploadTime())
+                outputMetric.setLastUploadTime(newLastUploadTime);
         }
     }
 
