@@ -41,6 +41,11 @@ public class AccessMetric {
 
 
     public boolean parse(String s) throws ParseException {
+        if (s.equals("__FINISH__")) {
+            timestamp = 0;
+            return true;
+        }
+
         final int MAX_MATCHED_FIELDS = 20;
         String[] matchedField = new String[MAX_MATCHED_FIELDS];
         int matchedFieldCounter = 0;
@@ -132,7 +137,7 @@ public class AccessMetric {
         DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");
         Date d =  df.parse(s.substring(0, 19) + "00" + s.substring(21));
         timestamp = d.getTime() / 1000;
-        return true;
+        return (timestamp != 0) ? true : false;
     }
 
     private class HttpMethod extends HashMapUpdater<String> {

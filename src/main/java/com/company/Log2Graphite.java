@@ -23,9 +23,15 @@ public class Log2Graphite {
             System.exit(255);
         }
 
-        // run tailer
-        Tail tailer = new Tail(cli.accessLogPath(), cli.fromEnd(), logInputQueue);
-        tailer.run();
+        if (cli.noTail()) {
+            LOG.info("read " + cli.accessLogPath() + " and exit");
+            ExecutorService execParser = Executors.newFixedThreadPool(1);
+            execParser.execute(new Reader(cli.accessLogPath(), logInputQueue));
+        } else {
+            LOG.info("tail " + cli.accessLogPath());
+            Tail tailer = new Tail(cli.accessLogPath(), cli.fromEnd(), logInputQueue);
+            tailer.run();
+        }
 
         // run parsers
         ExecutorService execParser = Executors.newFixedThreadPool(cli.ParserThreads());

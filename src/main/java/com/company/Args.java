@@ -12,34 +12,41 @@ public class Args {
 
     private void optionsInit() {
         @SuppressWarnings("all")
-        Option inputfile = OptionBuilder.withArgName("filepath")
+        Option inputFile = OptionBuilder.withArgName("filepath")
                 .hasArg(true)
                 .isRequired()
                 .withDescription("log file")
                 .create("f");
-        options.addOption(inputfile);
+        options.addOption(inputFile);
 
         @SuppressWarnings("all")
-        Option tailerend = OptionBuilder.withArgName("start")
+        Option noTail = OptionBuilder.withArgName("notail")
+                .hasArg(false)
+                .withDescription("parse file till end and exit")
+                .create("notail");
+        options.addOption(noTail);
+
+        @SuppressWarnings("all")
+        Option tailerEnd = OptionBuilder.withArgName("start")
                 .hasArg(false)
                 .withDescription("process log from start of file if true. default is false")
                 .create("start");
-        options.addOption(tailerend);
+        options.addOption(tailerEnd);
 
         @SuppressWarnings("all")
-        Option parserthreads = OptionBuilder
+        Option parserThreads = OptionBuilder
                 .hasArg(true)
                 .withDescription("number of parsers. default is 1 parser)")
                 .create("t");
-        options.addOption(parserthreads);
+        options.addOption(parserThreads);
 
         @SuppressWarnings("all")
-        Option graphitehost = OptionBuilder.withArgName("host")
+        Option graphiteHost = OptionBuilder.withArgName("host")
                 .hasArg(true)
                 .isRequired()
                 .withDescription("Graphite host IP")
                 .create("h");
-        options.addOption(graphitehost);
+        options.addOption(graphiteHost);
     }
 
     public void parse(String[] args) throws ParseException {
@@ -59,11 +66,12 @@ public class Args {
     }
 
     public boolean fromEnd() {
-        if (cmd.hasOption("start"))
-            return false;
-        return true;
+        return (!cmd.hasOption("start"));
     }
 
+    public boolean noTail() {
+        return (cmd.hasOption("notail"));
+    }
     public String accessLogPath() {
         return cmd.getOptionValue("f");
     }

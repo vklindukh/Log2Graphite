@@ -30,26 +30,34 @@ public class Collector {
         AccessMetric metric;
         while (true) {
             metric = logInputMetric.take();
-            outputMetric.update(metric);
-            upload();
+            if (metric.getTimestamp() != 0) {
+                outputMetric.update(metric);
+            } else {
+                Thread.sleep(1000);
+                upload(true);
+                LOG.info("all metric uploaded");
+                System.exit(0);
+            }
+            upload(false);
         }
     }
 
-    private void upload() throws InterruptedException {
+    private void upload(boolean uploadAll) throws InterruptedException {
         if (outputMetric.getMaxUpdatedTime() > (outputMetric.getLastUploadTime() + WAIT_BEFORE_UPLOAD)) { // upload all <= maxUpdatedTime - 120
             Long newLastUploadTime = 0L;
 
-            for (Long key : outputMetric.keySet()) {
-                if (key <= outputMetric.getLastUploadTime())
-                    outputMetric.remove(key);
-                else if (key <= (outputMetric.getMaxUpdatedTime() - WAIT_BEFORE_UPLOAD)) {
+            for (Long timestamp : outputMetric.keySet()) {
+                if (timestamp <= outputMetric.getLastUploadTime()) {
+                    LOG.error("too old metric found (" + timestamp + "). remove");
+                    outputMetric.remove(timestamp);
+                } else if (uploadAll || (timestamp <= (outputMetric.getMaxUpdatedTime() - WAIT_BEFORE_UPLOAD))) {
                     try {
-                        AccessMetric metric = outputMetric.get(key);
+                        AccessMetric metric = outputMetric.get(timestamp);
                         toGraphite(metric);
                         LOG.info("upload :" + System.getProperty("line.separator") + metric);
-                        if (key > newLastUploadTime)
-                            newLastUploadTime = key;
-                        outputMetric.remove(key);
+                        if (timestamp > newLastUploadTime)
+                            newLastUploadTime = timestamp;
+                        outputMetric.remove(timestamp);
                     } catch (IOException m) {
                         LOG.error(m + " while sending metric to " + graphiteServer);
                         Thread.sleep(500);
