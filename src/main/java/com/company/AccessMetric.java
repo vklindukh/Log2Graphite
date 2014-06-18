@@ -143,9 +143,9 @@ public class AccessMetric {
     class HttpMethod extends HashMapUpdater<String> {
         public void insert(String s) {
             String key = "OTHER_METHOD";
-            if (s.substring(1,6).equals("POST "))
+            if ((s.length() > 6) && s.substring(1,6).equals("POST "))
                 key = "POST";
-            else if (s.substring(1,5).equals("GET "))
+            else if ((s.length() > 5) & s.substring(1,5).equals("GET "))
                 key = "GET";
             update(key);
         }
@@ -156,9 +156,9 @@ public class AccessMetric {
             String key = "type_unknown";
             int position = s.indexOf(" ");
             if (position > 0) {
-                if (s.substring(position + 1, position + 14).equals("/adserver/ad?"))
+                if (s.length() > (position + 15) && s.substring(position + 1, position + 14).equals("/adserver/ad?"))
                     key = "ad";
-                else if (s.substring(position + 1, position + 17).equals("/adserver/track?"))
+                else if (s.length() > (position + 18) && s.substring(position + 1, position + 17).equals("/adserver/track?"))
                     key = "track";
             }
             update(key);

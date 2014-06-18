@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AccessMetricHashMapTest {
 
-    private AccessMetricParser metricParser = new AccessMetricParser();
+    private AccessMetricParser metricParser = new AccessMetricParser("");
 
     @org.junit.Test
     public void multiplyMetrics() throws Exception {

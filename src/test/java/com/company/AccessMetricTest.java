@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AccessMetricTest {
 
-    private AccessMetricParser metricParser = new AccessMetricParser();
+    private AccessMetricParser metricParser = new AccessMetricParser("");
     @Test(expected = ParseException.class)
     public void parseWithException1() throws ParseException {
         String s = "68.171.238.156 - - [12/Jun/2014:03:37:02 +0000] a a a a a a a a a a a";

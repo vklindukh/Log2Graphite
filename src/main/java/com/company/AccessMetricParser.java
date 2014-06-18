@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,10 +12,15 @@ import java.util.regex.Pattern;
 public class AccessMetricParser {
     public static final String LOG_FINISHED = "__FINISH__";
 
+    private HashMap<String, Integer> logFormat;
     private final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
     private Pattern logPattern = Pattern.compile(logEntryPattern);
     private Matcher matcher = logPattern.matcher("");
     private DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");
+
+    public AccessMetricParser(String s) {
+        formatParse(s);
+    }
 
     public AccessMetric parse(String s) throws ParseException {
         AccessMetric metric = new AccessMetric();
@@ -55,6 +61,11 @@ public class AccessMetricParser {
         throw new ParseException("cannot parse", 0);
     }
 
+    private void formatParse(String s) {
+
+
+    }
+
     private long parseTimestamp(String s) throws ParseException {
         if (s.length() < 23) {
             throw new ParseException ("wrong string length", 0);
@@ -62,5 +73,4 @@ public class AccessMetricParser {
         Date d =  df.parse(s.substring(0, 19) + "00" + s.substring(21));
         return(d.getTime() / 1000);
     }
-
 }

@@ -11,7 +11,7 @@ public class Parser implements Runnable {
     private static BlockingQueue<String> logInputQueue;
     private static BlockingQueue<AccessMetric> logInputMetric;
     private String logFormat;
-    private AccessMetricParser metricParser = new AccessMetricParser();
+    private AccessMetricParser metricParser;
 
     private static final Logger LOG = Logger.getLogger(Parser.class);
 
@@ -23,7 +23,7 @@ public class Parser implements Runnable {
 
     public void run() {
         String currentLine;
-
+        metricParser = new AccessMetricParser(logFormat);
 
         LOG.info("started Parser " + Thread.currentThread().getId());
         //currentMetric.prepare(logFormat);
