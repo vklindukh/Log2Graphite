@@ -10,19 +10,23 @@ public class Parser implements Runnable {
 
     private static BlockingQueue<String> logInputQueue;
     private static BlockingQueue<AccessMetric> logInputMetric;
+    private String logFormat;
+    private AccessMetricParser metricParser = new AccessMetricParser();
+
     private static final Logger LOG = Logger.getLogger(Parser.class);
 
-    private AccessMetric currentMetric;
-
-    public Parser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m) {
+    public Parser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, String f) {
         logInputQueue = q;
         logInputMetric = m;
+        logFormat = f;
     }
 
     public void run() {
         String currentLine;
 
+
         LOG.info("started Parser " + Thread.currentThread().getId());
+        //currentMetric.prepare(logFormat);
         while (true) {
             try {
                 currentLine = logInputQueue.take();
@@ -36,10 +40,8 @@ public class Parser implements Runnable {
 
     private void process(String s) {
         try {
-            currentMetric = new AccessMetric();
-            if ( currentMetric.parse(s)) {
-                push(currentMetric);
-            }
+            push(metricParser.parse(s));
+
         } catch (ParseException m) {
             LOG.error(m + " while parsing : " + s);
         }

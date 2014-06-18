@@ -10,11 +10,13 @@ public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
     public void update(AccessMetric m) {
         if (containsKey(m.getTimestamp())) { // update  metric
             get(m.getTimestamp()).update(m);
-        } else
+        } else {
             put(m.getTimestamp(), m);
+        }
 
-        if (m.getTimestamp() > maxUpdatedTime)
+        if (m.getTimestamp() > maxUpdatedTime) {
             maxUpdatedTime = m.getTimestamp();
+        }
     }
 
     public String toString() {

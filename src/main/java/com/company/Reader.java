@@ -36,7 +36,7 @@ public class Reader implements Runnable {
             }
 
             LOG.info("log " + logFile + " processed");
-            logInputQueue.put("__FINISH__");
+            logInputQueue.put(AccessMetricParser.LOG_FINISHED);
             reader.close();
         } catch (IOException | InterruptedException m) {
             LOG.fatal(m.toString());

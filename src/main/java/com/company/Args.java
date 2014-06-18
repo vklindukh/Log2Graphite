@@ -1,13 +1,20 @@
 package com.company;
 
+import com.sun.tracing.dtrace.ArgsAttributes;
 import org.apache.commons.cli.*;
+
+import java.io.IOException;
+import java.util.Properties;
 
 public class Args {
     private Options options = new Options();
     private CommandLine cmd;
+    Properties properties = new Properties();
 
-    public Args() {
+    public Args(String[] args) throws ParseException, IOException {
         optionsInit();
+        readOptions(args);
+        readProperties();
     }
 
     private void optionsInit() {
@@ -49,7 +56,7 @@ public class Args {
         options.addOption(graphiteHost);
     }
 
-    public void parse(String[] args) throws ParseException {
+    public void readOptions(String[] args) throws ParseException {
         try {
             CommandLineParser parser = new BasicParser();
             cmd = parser.parse(options, args);
@@ -78,5 +85,13 @@ public class Args {
 
     public String graphiteHost() {
         return cmd.getOptionValue("h");
+    }
+
+    public void readProperties() throws IOException {
+        properties.load(Args.class.getClassLoader().getResourceAsStream("conf.properties"));
+    }
+
+    public String getLogFormat() {
+        return properties.getProperty("log_format");
     }
 }

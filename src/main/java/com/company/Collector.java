@@ -26,24 +26,39 @@ public class Collector {
         graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
     }
 
+//    public void run() throws InterruptedException {
+//        AccessMetric metric;
+//        while (true) {
+//            metric = logInputMetric.take();
+//            if (metric.getTimestamp() != 0) {
+//                outputMetric.update(metric);
+//            } else {
+//                Thread.sleep(1000);
+//                upload(true);
+//                LOG.info("all metric uploaded");
+//                System.exit(0);
+//            }
+//            upload(false);
+//        }
+//    }
     public void run() throws InterruptedException {
         AccessMetric metric;
-        while (true) {
+        boolean finished = false;
+        while (!finished || !logInputMetric.isEmpty()) {
             metric = logInputMetric.take();
             if (metric.getTimestamp() != 0) {
                 outputMetric.update(metric);
             } else {
                 Thread.sleep(1000);
-                upload(true);
-                LOG.info("all metric uploaded");
-                System.exit(0);
+                finished = true;
             }
             upload(false);
         }
+        upload(true);
     }
 
     private void upload(boolean uploadAll) throws InterruptedException {
-        if (outputMetric.getMaxUpdatedTime() > (outputMetric.getLastUploadTime() + WAIT_BEFORE_UPLOAD)) { // upload all <= maxUpdatedTime - 120
+        if (uploadAll || (outputMetric.getMaxUpdatedTime() > (outputMetric.getLastUploadTime() + WAIT_BEFORE_UPLOAD))) { // upload all <= maxUpdatedTime - 120
             Long newLastUploadTime = 0L;
 
             for (Long timestamp : outputMetric.keySet()) {

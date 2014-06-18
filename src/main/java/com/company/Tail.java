@@ -15,6 +15,9 @@ public class Tail {
     private static boolean tailerEnd = false;
 
     public Tail(String f, boolean e, BlockingQueue<String> q) {
+        if (f.matches("^.*gz$")) {
+            throw new IllegalStateException("wrong input file extention '" + f + "'");
+        }
         logFile = f;
         logInputQueue = q;
         tailerEnd = e;
