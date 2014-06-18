@@ -51,17 +51,21 @@ public class Collector {
                     LOG.error("too old metric found (" + timestamp + "). remove");
                     outputMetric.remove(timestamp);
                 } else if (uploadAll || (timestamp <= (outputMetric.getMaxUpdatedTime() - WAIT_BEFORE_UPLOAD))) {
-                    try {
                         AccessMetric metric = outputMetric.get(timestamp);
-                        toGraphite(metric);
-                        LOG.info("upload :" + System.getProperty("line.separator") + metric);
-                        if (timestamp > newLastUploadTime)
-                            newLastUploadTime = timestamp;
-                        outputMetric.remove(timestamp);
-                    } catch (IOException m) {
-                        LOG.error(m + " while sending metric to " + graphiteServer);
-                        Thread.sleep(500);
-                    }
+                        boolean uploadStatus = false;
+
+                        while (!uploadStatus) {
+                            try {
+                                uploadStatus = toGraphite(metric);
+                                LOG.info("upload :" + System.getProperty("line.separator") + metric);
+                                if (timestamp > newLastUploadTime)
+                                    newLastUploadTime = timestamp;
+                                outputMetric.remove(timestamp);
+                            } catch (IOException m) {
+                                LOG.error(m + " while sending metric to " + graphiteServer);
+                                Thread.sleep(500);
+                            }
+                        }
                 }
             }
 
@@ -70,7 +74,7 @@ public class Collector {
         }
     }
 
-    private void toGraphite(AccessMetric metric) throws IOException {
+    private boolean toGraphite(AccessMetric metric) throws IOException {
         SocketAddress address = new InetSocketAddress(graphiteServer, graphiteServerPort);
         Socket clientSocket = new Socket();
         clientSocket.connect(address, 10000);
@@ -85,5 +89,6 @@ public class Collector {
             }
         }
         clientSocket.close();
+        return true;
     }
 }

@@ -2,7 +2,10 @@ package com.company;
 
 import org.apache.log4j.Logger;
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.concurrent.BlockingQueue;
+import java.util.zip.GZIPInputStream;
 
 public class Reader implements Runnable {
 
@@ -18,17 +21,23 @@ public class Reader implements Runnable {
 
     public void run() {
         try {
-            FileInputStream stream = new FileInputStream(logFile);
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
+            BufferedReader reader;
 
+            LOG.info("started Reader " + Thread.currentThread().getId());
+            if (logFile.matches("^.*gz$")) {
+                reader = new BufferedReader(new InputStreamReader (new GZIPInputStream(
+                        new FileInputStream(logFile))));
+            } else {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
+            }
             String s;
-            while ((s = buffer.readLine()) != null) {
+            while ((s = reader.readLine()) != null) {
                 logInputQueue.put(s);
             }
 
             LOG.info("log " + logFile + " processed");
             logInputQueue.put("__FINISH__");
-            buffer.close();
+            reader.close();
         } catch (IOException | InterruptedException m) {
             LOG.fatal(m.toString());
             System.exit(255);

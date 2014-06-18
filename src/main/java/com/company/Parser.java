@@ -1,6 +1,8 @@
 package com.company;
 
 import org.apache.log4j.Logger;
+
+import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.util.concurrent.BlockingQueue;
 
@@ -19,6 +21,8 @@ public class Parser implements Runnable {
 
     public void run() {
         String currentLine;
+
+        LOG.info("started Parser " + Thread.currentThread().getId());
         while (true) {
             try {
                 currentLine = logInputQueue.take();
