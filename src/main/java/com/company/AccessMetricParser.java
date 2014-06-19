@@ -73,6 +73,7 @@ public class AccessMetricParser {
                     metric.getCodes().put(Integer.parseInt(matchedField[logFormat.get("code")].replace("\"", "").replace("'", "")), 1L);
                 }
                 metric.setRequests(1);
+                metric.setLastUpdated();
                 return  metric;
             }
         } catch (NumberFormatException | ParseException m) {

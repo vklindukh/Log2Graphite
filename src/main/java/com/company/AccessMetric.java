@@ -16,6 +16,8 @@ public class AccessMetric {
     private HttpMethod methods = new HttpMethod();
     private adType types = new adType();
     private responseCode codes = new responseCode();
+    private Long lastUpdated = 0L;
+    private Long lastUploaded = 0L;
 
     public synchronized boolean update(AccessMetric n) {
         if (this.timestamp != n.timestamp) {
@@ -28,6 +30,7 @@ public class AccessMetric {
         this.methods.update(n.methods);
         this.types.update(n.types);
         this.codes.update(n.codes);
+        lastUpdated = new java.util.Date().getTime();
         return true;
     }
 
@@ -141,7 +144,21 @@ public class AccessMetric {
         this.codes = codes;
     }
 
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
 
+    public void setLastUpdated() {
+        lastUpdated = new java.util.Date().getTime();
+    }
+
+    public long getLastUploaded() {
+        return lastUploaded;
+    }
+
+    public void setLastUploaded() {
+        lastUploaded = new java.util.Date().getTime();
+    }
 
     class HttpMethod extends HashMapUpdater<String> {
         public void insert(String s) throws ParseException {

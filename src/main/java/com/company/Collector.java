@@ -5,8 +5,9 @@ import org.apache.log4j.Logger;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class Collector {
     private static final Logger LOG = Logger.getLogger(Collector.class);
@@ -14,7 +15,12 @@ public class Collector {
     private static BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricHashMap outputMetric;
 
-    private static final int WAIT_BEFORE_UPLOAD = 120; // upload metric older then 120 seconds
+    private static final int WAIT_BEFORE_REMOVE = 120000;
+    private static final int INPUT_METRIC_TIMEOUT = 3;
+    private static final int INPUT_METRIC_TIMEOUT_NOTIFY = 100;
+
+
+
     private String graphiteServer;
     private static final int graphiteServerPort = 2003;
     private static String graphiteMetricBase = "access";
@@ -26,31 +32,28 @@ public class Collector {
         graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
     }
 
-//    public void run() throws InterruptedException {
-//        AccessMetric metric;
-//        while (true) {
-//            metric = logInputMetric.take();
-//            if (metric.getTimestamp() != 0) {
-//                outputMetric.update(metric);
-//            } else {
-//                Thread.sleep(1000);
-//                upload(true);
-//                LOG.info("all metric uploaded");
-//                System.exit(0);
-//            }
-//            upload(false);
-//        }
-//    }
     public void run() throws InterruptedException {
         AccessMetric metric;
         boolean finished = false;
+        int timeoutCounter = 0;
         while (!finished || !logInputMetric.isEmpty()) {
-            metric = logInputMetric.take();
-            if (metric.getTimestamp() != 0) {
-                outputMetric.update(metric);
+            metric = logInputMetric.poll(INPUT_METRIC_TIMEOUT, TimeUnit.SECONDS);
+            //LOG.debug("metric : " + metric);
+            if (metric != null) {
+                if (metric.getTimestamp() != 0) {
+                    if (outputMetric.getLastUploadTime() < metric.getTimestamp()) {
+                        outputMetric.update(metric);
+                    }
+                } else {
+                    Thread.sleep(1000);
+                    finished = true;
+                }
             } else {
-                Thread.sleep(1000);
-                finished = true;
+                timeoutCounter++;
+                if (timeoutCounter > INPUT_METRIC_TIMEOUT_NOTIFY) {
+                    LOG.info("no parsed data last " + INPUT_METRIC_TIMEOUT + " seconds");
+                    timeoutCounter = 0;
+                }
             }
             upload(false);
         }
@@ -58,34 +61,35 @@ public class Collector {
     }
 
     private void upload(boolean uploadAll) throws InterruptedException {
-        if (uploadAll || (outputMetric.getMaxUpdatedTime() > (outputMetric.getLastUploadTime() + WAIT_BEFORE_UPLOAD))) { // upload all <= maxUpdatedTime - 120
-            Long newLastUploadTime = 0L;
-
-            for (Long timestamp : outputMetric.keySet()) {
-                if (timestamp <= outputMetric.getLastUploadTime()) {
-                    LOG.error("too old metric found (" + timestamp + "). remove");
-                    outputMetric.remove(timestamp);
-                } else if (uploadAll || (timestamp <= (outputMetric.getMaxUpdatedTime() - WAIT_BEFORE_UPLOAD))) {
-                        AccessMetric metric = outputMetric.get(timestamp);
+        for (Long timestamp : outputMetric.keySet()) {
+            if (timestamp <= outputMetric.getLastUploadTime()) {
+                LOG.error("too old metric found (" + timestamp + "). remove");
+                outputMetric.remove(timestamp);
+            } else {
+                if (uploadAll ||
+                        ((outputMetric.get(timestamp).getLastUploaded() == 0) &&
+                                (outputMetric.get(timestamp).getLastUpdated() < (new java.util.Date().getTime() - 3000))) ||
+                        ((outputMetric.get(timestamp).getLastUploaded() != 0) &&
+                                (outputMetric.get(timestamp).getLastUploaded() < outputMetric.get(timestamp).getLastUpdated()))
+                        ) {
+                    try {
                         boolean uploadStatus = false;
-
                         while (!uploadStatus) {
-                            try {
-                                uploadStatus = toGraphite(metric);
-                                LOG.info("upload :" + System.getProperty("line.separator") + metric);
-                                if (timestamp > newLastUploadTime)
-                                    newLastUploadTime = timestamp;
-                                outputMetric.remove(timestamp);
-                            } catch (IOException m) {
-                                LOG.error(m + " while sending metric to " + graphiteServer);
-                                Thread.sleep(500);
-                            }
+                            uploadStatus = toGraphite(outputMetric.get(timestamp));
                         }
+                        outputMetric.get(timestamp).setLastUploaded();
+                        LOG.info("upload :" + System.getProperty("line.separator") + outputMetric.get(timestamp));
+                    } catch (IOException e) {
+                        LOG.error(e + " while sending metric to " + graphiteServer);
+                        Thread.sleep(500);
+                    }
+                }
+                if ((outputMetric.get(timestamp).getLastUploaded() != 0) &&
+                        outputMetric.get(timestamp).getLastUpdated() < (new java.util.Date().getTime() - WAIT_BEFORE_REMOVE)) {
+                    outputMetric.remove(timestamp);
+                    outputMetric.setLastUploadTime(timestamp);
                 }
             }
-
-            if (newLastUploadTime > outputMetric.getLastUploadTime())
-                outputMetric.setLastUploadTime(newLastUploadTime);
         }
     }
 
@@ -95,7 +99,7 @@ public class Collector {
         clientSocket.connect(address, 10000);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
-        ConcurrentHashMap<String , String> metricFormatted = metric.format();
+        Map<String , String> metricFormatted = metric.format();
         for (String metricName : metricFormatted.keySet()) {
             if (!metricFormatted.get("timestamp").equals("0")) {
                 if (!metricName.equals("timestamp")) {

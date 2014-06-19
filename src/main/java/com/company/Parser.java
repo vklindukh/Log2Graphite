@@ -24,11 +24,11 @@ public class Parser implements Runnable {
         String currentLine;
 
         LOG.info("started Parser " + Thread.currentThread().getId());
-        //currentMetric.prepare(logFormat);
         boolean threadIsActive = true;
         while (threadIsActive) {
             try {
                 currentLine = logInputQueue.take();
+                //LOG.debug("currentLine : " + currentLine);
                 threadIsActive = process(currentLine);
             } catch (InterruptedException m) {
                 LOG.fatal(m);

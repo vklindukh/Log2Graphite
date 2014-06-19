@@ -12,7 +12,7 @@ public class Log2Graphite {
     private static final Logger LOG = Logger.getLogger(Log2Graphite.class);
 
     private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<String>(10240);
-    private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(1024);
+    private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(10240);
 
     private static Args cli;
 
