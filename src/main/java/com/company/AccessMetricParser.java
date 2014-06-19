@@ -1,24 +1,33 @@
 package com.company;
 
+import org.apache.log4j.Logger;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class AccessMetricParser {
+    private static final Logger LOG = Logger.getLogger(AccessMetricParser.class);
+
     public static final String LOG_FINISHED = "__FINISH__";
 
-    private HashMap<String, Integer> logFormat;
+    private HashMap<String, Integer> logFormat = new HashMap();
     private final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
     private Pattern logPattern = Pattern.compile(logEntryPattern);
     private Matcher matcher = logPattern.matcher("");
-    private DateFormat df = new SimpleDateFormat("'['dd/MMM/yyyy:HH:mm:ss z']'");
+    private DateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss z");
 
-    public AccessMetricParser(String s) {
+    public AccessMetricParser(HashMap<String, Integer> logFormat) {
+        this.logFormat = logFormat;
+    }
+
+    public AccessMetricParser(String s) throws ParseException {
         formatParse(s);
     }
 
@@ -34,43 +43,104 @@ public class AccessMetricParser {
         String[] matchedField = new String[MAX_MATCHED_FIELDS];
         int matchedFieldCounter = 0;
 
-        matcher.reset(s);
+        matcher.reset(s.replaceAll("[\\[\\];]", ""));
         while (matcher.find() && (matchedFieldCounter < MAX_MATCHED_FIELDS)) {
+            matchedField[matchedFieldCounter] = matcher.group(1);
             matchedFieldCounter++;
-            matchedField[matchedFieldCounter] = matcher.group();
         }
 
         try {
-            if (matchedFieldCounter == 16) { // probably known access.log format
-                metric.setTimestamp(parseTimestamp(matchedField[4] + matchedField[5]));
-
-                metric.setMin(Short.parseShort(matchedField[4].substring(16, 18)));
-                metric.setSize(Integer.parseInt(matchedField[8].replace(" ", "")));
-                metric.setRequest_time(Float.parseFloat(matchedField[14].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[14].replace("\"", "")));
-                metric.setUpstream_time(Float.parseFloat(matchedField[15].replace("\"", "").replace(" ", "").equals("-") ? "0" : matchedField[15].replace("\"", "")));
-                metric.getMethods().insert(matchedField[6]);
-                metric.getTypes().insert(matchedField[6]);
-                metric.getCodes().put(Integer.parseInt(matchedField[7].replace(" ", "")), 1L);
+            if (matchedFieldCounter == logFormat.get("fields")) {
+                if (!logFormat.containsKey("timestamp")) {
+                    throw new ParseException("no reqired field \"timestamp\"", 0);
+                }
+                metric.setTimestamp(parseTimestamp(matchedField[logFormat.get("timestamp")].replace("\"", "").replace("'", "") + " " + matchedField[logFormat.get("timestamp") + 1].replace("\"", "").replace("'", "")));
+                metric.setMin(Short.parseShort(matchedField[logFormat.get("timestamp")].replace("\"", "").replace("'", "").substring(15, 17)));
+                if (logFormat.containsKey("size")) {
+                    metric.setSize(Integer.parseInt(matchedField[logFormat.get("size")].replace("\"", "").replace("'", "")));
+                }
+                if (logFormat.containsKey("request_time")) {
+                    metric.setRequest_time(Float.parseFloat(matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "")));
+                }
+                if (logFormat.containsKey("upstream_time")) {
+                    metric.setUpstream_time(Float.parseFloat(matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "")));
+                }
+                if (logFormat.containsKey("request")) {
+                    metric.getMethods().insert(matchedField[logFormat.get("request")].replace("\"", "").replace("'", ""));
+                    metric.getTypes().insert(matchedField[logFormat.get("request")].replace("\"", "").replace("'", ""));
+                }
+                if (logFormat.containsKey("code")) {
+                    metric.getCodes().put(Integer.parseInt(matchedField[logFormat.get("code")].replace("\"", "").replace("'", "")), 1L);
+                }
                 metric.setRequests(1);
                 return  metric;
             }
         } catch (NumberFormatException | ParseException m) {
-            throw new ParseException(m.toString(), 0);
+            throw new ParseException(m.toString() + " : " + s, 0);
         }
 
-        throw new ParseException("cannot parse", 0);
+        throw new ParseException("cannot parse '" + s + "'", 0);
     }
 
-    private void formatParse(String s) {
+    public HashMap<String, Integer> getLogFormat() {
+        return logFormat;
+    }
 
 
+    private void formatParse(String s) throws ParseException {
+        if ((s == null) || (s.length() == 0) || (s.equals(""))) {
+            LOG.fatal("need access log format template");
+            throw new IllegalStateException("no access log format template found");
+        }
+
+        LOG.info("got access log format : " + s);
+
+        String[] fields = s.replaceAll("['\"\\[\\];]", "").split("\\s+");
+        Map<String, Integer> fieldsHash = new HashMap();
+        for (int i = 0; i < fields.length; i++) {
+            fieldsHash.put(fields[i], i);
+        }
+
+        String requiredFields[] = {"$time_local"};
+        for (int i = 0; i < requiredFields.length; i++) {
+            if (!fieldsHash.containsKey(requiredFields[i])) {
+                throw new ParseException("no required field $time_local", 0);
+            }
+        }
+
+        logFormat.put("fields", fields.length);
+
+        if (fieldsHash.containsKey("$time_local")) {
+            logFormat.put("fields", fields.length + 1);
+            logFormat.put("timestamp", fieldsHash.get("$time_local"));
+        }
+
+        Map<String, String> knownFields = new HashMap();
+        knownFields.put("$time_local", "timestamp");
+        knownFields.put("$body_bytes_sent", "size");
+        knownFields.put("$request", "request");
+        knownFields.put("$request_time", "request_time");
+        knownFields.put("$upstream_response_time", "upstream_time");
+        knownFields.put("$status", "code");
+
+        for (String field : knownFields.keySet()) {
+            if (fieldsHash.containsKey(field)) {
+                if (logFormat.containsKey("timestamp") && fieldsHash.get(field) > logFormat.get("timestamp")) {
+                    logFormat.put(knownFields.get(field), fieldsHash.get(field) + 1);
+                } else {
+                    logFormat.put(knownFields.get(field), fieldsHash.get(field));
+                }
+            }
+        }
+
+        LOG.info("parsed log format : " + logFormat);
     }
 
     private long parseTimestamp(String s) throws ParseException {
-        if (s.length() < 23) {
+        if (s.length() < 21) {
             throw new ParseException ("wrong string length", 0);
         }
-        Date d =  df.parse(s.substring(0, 19) + "00" + s.substring(21));
+        Date d =  df.parse(s.substring(0, 18) + "00" + s.substring(20));
         return(d.getTime() / 1000);
     }
 }

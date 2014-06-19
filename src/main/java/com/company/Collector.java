@@ -97,10 +97,12 @@ public class Collector {
 
         ConcurrentHashMap<String , String> metricFormatted = metric.format();
         for (String metricName : metricFormatted.keySet()) {
-            if (!metricName.equals("timestamp")) {
-                outToServer.writeBytes(graphiteMetricBase + "." + metricName + " " +
-                        metricFormatted.get(metricName) + " " + metricFormatted.get("timestamp") +
-                        System.getProperty("line.separator"));
+            if (!metricFormatted.get("timestamp").equals("0")) {
+                if (!metricName.equals("timestamp")) {
+                    outToServer.writeBytes(graphiteMetricBase + "." + metricName + " " +
+                            metricFormatted.get(metricName) + " " + metricFormatted.get("timestamp") +
+                            System.getProperty("line.separator"));
+                }
             }
         }
         clientSocket.close();

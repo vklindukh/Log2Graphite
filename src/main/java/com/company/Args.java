@@ -1,12 +1,14 @@
 package com.company;
 
-import com.sun.tracing.dtrace.ArgsAttributes;
 import org.apache.commons.cli.*;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 public class Args {
+    private static final Logger LOG = Logger.getLogger(Args.class);
+
     private Options options = new Options();
     private CommandLine cmd;
     Properties properties = new Properties();
@@ -14,10 +16,17 @@ public class Args {
     public Args(String[] args) throws ParseException, IOException {
         optionsInit();
         readOptions(args);
-        readProperties();
+        readProperties(getConfigFile());
     }
 
     private void optionsInit() {
+        @SuppressWarnings("all")
+        Option configFile = OptionBuilder.withArgName("c")
+                .hasArg(true)
+                .withDescription("config file")
+                .create("c");
+        options.addOption(configFile);
+
         @SuppressWarnings("all")
         Option inputFile = OptionBuilder.withArgName("filepath")
                 .hasArg(true)
@@ -67,28 +76,54 @@ public class Args {
         }
     }
 
-    public int ParserThreads() {
+    public int getParserNumThreads() {
         String s = (cmd.getOptionValue("t") == null) ? "1" : cmd.getOptionValue("t");
         return Integer.parseInt(s);
     }
 
-    public boolean fromEnd() {
+    public boolean getOptionFromEnd() {
         return (!cmd.hasOption("start"));
     }
 
-    public boolean noTail() {
+    public boolean getOptionNoTail() {
         return (cmd.hasOption("notail"));
     }
-    public String accessLogPath() {
+
+    public String getLogPath() {
         return cmd.getOptionValue("f");
     }
 
-    public String graphiteHost() {
+    public String getConfigFile() {
+        return cmd.getOptionValue("c");
+    }
+
+
+    public String getGraphiteHost() {
         return cmd.getOptionValue("h");
     }
 
-    public void readProperties() throws IOException {
+    public void readProperties(String configFile) throws IOException {
         properties.load(Args.class.getClassLoader().getResourceAsStream("conf.properties"));
+        if (configFile != null) {
+            File file = new File(configFile);
+            if (!file.isAbsolute()) {
+                configFile = System.getProperty("user.dir") + "/" + configFile;
+            }
+            LOG.info("read property from " + configFile);
+
+            if (!file.exists()) {
+                LOG.fatal(configFile + " not exist");
+                throw new FileNotFoundException(configFile + " not exist");
+            }
+
+            Properties propertiesOverride = new Properties();
+            FileInputStream configFileStream = new FileInputStream(file);
+            propertiesOverride.load(configFileStream);
+            if (propertiesOverride.containsKey("log_format")) {
+                properties.setProperty("log_format", propertiesOverride.getProperty("log_format"));
+            }
+            configFileStream.close();
+        }
     }
 
     public String getLogFormat() {

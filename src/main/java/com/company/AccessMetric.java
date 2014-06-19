@@ -1,5 +1,6 @@
 package com.company;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,9 +17,6 @@ public class AccessMetric {
     private adType types = new adType();
     private responseCode codes = new responseCode();
 
-
-    private HashMap<String, Integer> logFormat;
-
     public synchronized boolean update(AccessMetric n) {
         if (this.timestamp != n.timestamp) {
             return false;
@@ -34,20 +32,25 @@ public class AccessMetric {
     }
 
     public ConcurrentHashMap<String, String> format() {
-        ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap<String, String>();
-
+        ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap();
         metricFormatted.put("timestamp", Long.toString(timestamp));
+        if (timestamp == 0) {
+            return metricFormatted;
+        }
         metricFormatted.put("requests", Long.toString(requests));
         metricFormatted.put("size", Long.toString(size / requests));
         metricFormatted.put("request_time", Float.toString(request_time / requests));
         metricFormatted.put("upstream_time", Float.toString(upstream_time / requests));
 
-        for (String key : methods.keySet())
+        for (String key : methods.keySet()) {
             metricFormatted.put(key, Long.toString(methods.get(key)));
-        for (String key : types.keySet())
+        }
+        for (String key : types.keySet()) {
             metricFormatted.put(key, Long.toString(types.get(key)));
-        for (int key : codes.keySet())
+        }
+        for (int key : codes.keySet()) {
             metricFormatted.put(Integer.toString(key), Long.toString(codes.get(key)));
+        }
 
         return metricFormatted;
     }
@@ -141,27 +144,39 @@ public class AccessMetric {
 
 
     class HttpMethod extends HashMapUpdater<String> {
-        public void insert(String s) {
-            String key = "OTHER_METHOD";
-            if ((s.length() > 6) && s.substring(1,6).equals("POST "))
-                key = "POST";
-            else if ((s.length() > 5) & s.substring(1,5).equals("GET "))
-                key = "GET";
-            update(key);
+        public void insert(String s) throws ParseException {
+            try {
+                String key = "OTHER_METHOD";
+                if ((s.length() > 5) && s.substring(0, 5).equals("POST ")) {
+                    key = "POST";
+                } else if ((s.length() > 4) && s.substring(0, 4).equals("GET ")) {
+                    key = "GET";
+                }
+                update(key);
+            } catch (StringIndexOutOfBoundsException m) {
+                System.out.println(s);
+                throw new ParseException("cannot parse method", 0);
+            }
         }
     }
 
     class adType extends HashMapUpdater<String> {
-        public void insert(String s) {
-            String key = "type_unknown";
-            int position = s.indexOf(" ");
-            if (position > 0) {
-                if (s.length() > (position + 15) && s.substring(position + 1, position + 14).equals("/adserver/ad?"))
-                    key = "ad";
-                else if (s.length() > (position + 18) && s.substring(position + 1, position + 17).equals("/adserver/track?"))
-                    key = "track";
+        public void insert(String s) throws ParseException {
+            try {
+                String key = "type_unknown";
+                int position = s.indexOf(" ");
+                if (position > 0) {
+                    if (s.length() > (position + 16) && s.substring(position + 1, position + 14).equals("/adserver/ad?")) {
+                        key = "ad";
+                    } else if (s.length() > (position + 18) && s.substring(position + 1, position + 17).equals("/adserver/track?")) {
+                        key = "track";
+                    }
+                }
+                update(key);
+            } catch (StringIndexOutOfBoundsException m) {
+                System.out.println(s);
+                throw new ParseException("cannot parse ad type", 0);
             }
-            update(key);
         }
     }
 

@@ -1,9 +1,7 @@
 package com.company;
 
 import org.apache.commons.cli.*;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import sun.jvm.hotspot.utilities.WorkerThread;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -11,11 +9,10 @@ import java.net.UnknownHostException;
 import java.util.concurrent.*;
 
 public class Log2Graphite {
-
     private static final Logger LOG = Logger.getLogger(Log2Graphite.class);
 
-    private static BlockingQueue<String> logInputQueue = new ArrayBlockingQueue<String>(10240);
-    private static BlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(1024);
+    private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<String>(10240);
+    private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(1024);
 
     private static Args cli;
 
@@ -30,25 +27,26 @@ public class Log2Graphite {
         }
 
         try {
-            if (cli.noTail()) {
-                LOG.info("read " + cli.accessLogPath() + " and exit");
+            if (cli.getOptionNoTail()) {
+                LOG.info("read " + cli.getLogPath() + " and exit");
                 ExecutorService execParser = Executors.newFixedThreadPool(1);
-                execParser.execute(new Reader(cli.accessLogPath(), logInputQueue));
+                execParser.execute(new Reader(cli.getLogPath(), logInputQueue));
             } else {
-                LOG.info("tail " + cli.accessLogPath());
-                Tail tailer = new Tail(cli.accessLogPath(), cli.fromEnd(), logInputQueue);
+                LOG.info("tail " + cli.getLogPath());
+                Tail tailer = new Tail(cli.getLogPath(), cli.getOptionFromEnd(), logInputQueue);
                 tailer.run();
             }
 
             // run parsers
-            ExecutorService execParser = Executors.newFixedThreadPool(cli.ParserThreads());
-            for (int i = 0; i < cli.ParserThreads(); i++) {
-                execParser.execute(new Parser(logInputQueue, logInputMetric, cli.getLogFormat()));
+            AccessMetricParser accessMetricParser = new AccessMetricParser(cli.getLogFormat());
+            ExecutorService execParser = Executors.newFixedThreadPool(cli.getParserNumThreads());
+            for (int i = 0; i < cli.getParserNumThreads(); i++) {
+                execParser.execute(new Parser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat()));
             }
 
             // run collector
             try {
-                Collector collector = new Collector(logInputMetric, cli.graphiteHost());
+                Collector collector = new Collector(logInputMetric, cli.getGraphiteHost());
                 collector.run();
             } catch (UnknownHostException | InterruptedException m) {
                 LOG.fatal(m);

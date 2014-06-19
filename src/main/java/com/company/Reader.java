@@ -2,8 +2,6 @@ package com.company;
 
 import org.apache.log4j.Logger;
 import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.concurrent.BlockingQueue;
 import java.util.zip.GZIPInputStream;
 

@@ -1,7 +1,6 @@
 package com.company;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -16,7 +15,7 @@ public class Tail {
 
     public Tail(String f, boolean e, BlockingQueue<String> q) {
         if (f.matches("^.*gz$")) {
-            throw new IllegalStateException("wrong input file extention '" + f + "'");
+            throw new IllegalStateException("wrong input file extension '" + f + "'");
         }
         logFile = f;
         logInputQueue = q;
