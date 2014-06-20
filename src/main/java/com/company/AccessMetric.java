@@ -34,6 +34,12 @@ public class AccessMetric {
         return true;
     }
 
+    public boolean forceUpdate(AccessMetric n) {
+        this.timestamp = n.timestamp;
+        this.min = n.min;
+        return (update(n));
+    }
+
     public ConcurrentHashMap<String, String> format() {
         ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap();
         metricFormatted.put("timestamp", Long.toString(timestamp));

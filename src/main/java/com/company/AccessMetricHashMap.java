@@ -1,16 +1,25 @@
 package com.company;
 
+import org.apache.log4j.Logger;
+
 import java.util.concurrent.*;
 
 public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
+    private static final Logger LOG = Logger.getLogger(AccessMetricHashMap.class);
 
     private long lastUploadTime = 0;
+    private long lastUpdateTime = 0;
 
     public void update(AccessMetric m) {
-        if (containsKey(m.getTimestamp())) {
-            get(m.getTimestamp()).update(m);
+        if (m.getTimestamp() > lastUploadTime) {
+            if (containsKey(m.getTimestamp())) {
+                get(m.getTimestamp()).update(m);
+            } else {
+                put(m.getTimestamp(), m);
+            }
+            lastUpdateTime = System.currentTimeMillis();
         } else {
-            put(m.getTimestamp(), m);
+            LOG.error("gor too old metric " + m.getTimestamp());
         }
     }
 
@@ -20,6 +29,10 @@ public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
             s += get(key).toString();
         }
         return s;
+    }
+
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
     }
 
     public long getLastUploadTime() {

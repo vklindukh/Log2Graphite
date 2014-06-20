@@ -9,10 +9,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class Parser implements Runnable {
     private static final Logger LOG = Logger.getLogger(Parser.class);
 
-    private static ArrayBlockingQueue<String> logInputQueue;
-    private static ArrayBlockingQueue<AccessMetric> logInputMetric;
+    private ArrayBlockingQueue<String> logInputQueue;
+    private ArrayBlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricParser metricParser;
-
+    private AccessMetric aggregatedMetric = new AccessMetric();
+    private long aggregatedMetricTimestamp = 0;
+    private long queueUpdateLastTime = 0;
 
     public Parser(ArrayBlockingQueue<String> q, ArrayBlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
         logInputQueue = q;
@@ -28,7 +30,6 @@ public class Parser implements Runnable {
         while (threadIsActive) {
             try {
                 currentLine = logInputQueue.take();
-                //LOG.debug("currentLine : " + currentLine);
                 threadIsActive = process(currentLine);
             } catch (InterruptedException m) {
                 LOG.fatal(m);
@@ -40,22 +41,49 @@ public class Parser implements Runnable {
 
     private boolean process(String s) {
         try {
-            return (push(metricParser.parse(s)));
+            AccessMetric currentMetric = metricParser.parse(s);
+            long currentMetricTimestamp = currentMetric.getTimestamp();
+
+            if (aggregatedMetricTimestamp == 0) {
+                aggregatedMetric.forceUpdate(currentMetric);
+                aggregatedMetricTimestamp = currentMetricTimestamp;
+                if (currentMetricTimestamp == 0) {
+                    queueUpdateLastTime = 0;
+                }
+            } else if ((currentMetricTimestamp == aggregatedMetricTimestamp)) {
+                aggregatedMetric.update(currentMetric);
+            } else {
+                push(aggregatedMetric);
+                aggregatedMetric = new AccessMetric();
+                aggregatedMetric.forceUpdate(currentMetric);
+                aggregatedMetricTimestamp = currentMetricTimestamp;
+                if (currentMetricTimestamp == 0) {
+                    queueUpdateLastTime = 0;
+                }
+            }
+
+            if ((queueUpdateLastTime + 1000) < System.currentTimeMillis()) {
+                boolean pushStatus = push(aggregatedMetric);
+                aggregatedMetric = new AccessMetric();
+                aggregatedMetricTimestamp = 0;
+                return (pushStatus);
+            }
         } catch (ParseException m) {
             LOG.error(m + " while parsing : " + s);
         }
         return true;
     }
 
-    private boolean push(AccessMetric c) {
+    private boolean push(AccessMetric metric) {
         try {
-            logInputMetric.put(c);
-            if (c.getTimestamp() == 0) {
+            logInputMetric.put(metric);
+            queueUpdateLastTime = System.currentTimeMillis();
+            if (metric.getTimestamp() == 0) {
                 logInputQueue.put(AccessMetricParser.LOG_FINISHED);
                 return false;
             }
-        } catch (InterruptedException m) {
-            LOG.fatal(m + " while pushing metric to queue");
+        } catch (InterruptedException e) {
+            LOG.fatal(e + " while pushing metric to queue");
             System.exit(255);
         }
         return true;

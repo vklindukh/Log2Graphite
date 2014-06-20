@@ -21,7 +21,7 @@ public class Args {
 
     private void optionsInit() {
         @SuppressWarnings("all")
-        Option configFile = OptionBuilder.withArgName("c")
+        Option configFile = OptionBuilder.withArgName("config")
                 .hasArg(true)
                 .withDescription("config file")
                 .create("c");
@@ -43,13 +43,6 @@ public class Args {
         options.addOption(noTail);
 
         @SuppressWarnings("all")
-        Option noGraphite = OptionBuilder.withArgName("nographite")
-                .hasArg(false)
-                .withDescription("do not sent data to Graphite")
-                .create("nographite");
-        options.addOption(noGraphite);
-
-        @SuppressWarnings("all")
         Option tailerEnd = OptionBuilder.withArgName("start")
                 .hasArg(false)
                 .withDescription("process log from start of file if true. default is false")
@@ -66,10 +59,16 @@ public class Args {
         @SuppressWarnings("all")
         Option graphiteHost = OptionBuilder.withArgName("host")
                 .hasArg(true)
-                .isRequired()
                 .withDescription("Graphite host IP")
                 .create("h");
         options.addOption(graphiteHost);
+
+        @SuppressWarnings("all")
+        Option aggregateMetricTimeout = OptionBuilder.withArgName("aggregate_time")
+                .hasArg(true)
+                .withDescription("aggregate metric timeout in seconds. default is 60")
+                .create("atime");
+        options.addOption(aggregateMetricTimeout);
     }
 
     public void readOptions(String[] args) throws ParseException {
@@ -88,16 +87,17 @@ public class Args {
         return Integer.parseInt(s);
     }
 
+    public int getAggregateMetricTimeout() {
+        String s = (cmd.getOptionValue("atime") == null) ? "60" : cmd.getOptionValue("atime");
+        return Integer.parseInt(s) * 1000;
+    }
+
     public boolean getOptionFromEnd() {
         return (!cmd.hasOption("start"));
     }
 
     public boolean getOptionNoTail() {
         return (cmd.hasOption("notail"));
-    }
-
-    public boolean getOptionNoGraphite() {
-        return (cmd.hasOption("nographite"));
     }
 
     public String getLogPath() {

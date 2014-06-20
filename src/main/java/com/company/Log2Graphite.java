@@ -46,7 +46,7 @@ public class Log2Graphite {
 
             // run collector
             try {
-                Collector collector = new Collector(logInputMetric, (cli.getOptionNoGraphite() ? null : cli.getGraphiteHost()));
+                Collector collector = new Collector(logInputMetric, cli.getGraphiteHost(), cli.getAggregateMetricTimeout());
                 collector.run();
             } catch (UnknownHostException | InterruptedException m) {
                 LOG.fatal(m);

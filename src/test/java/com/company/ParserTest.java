@@ -27,13 +27,14 @@ public class ParserTest {
         logInputQueue.put(s);
         logInputQueue.put(s);
         logInputQueue.put(AccessMetricParser.LOG_FINISHED);
+        Thread.sleep(2000);
 
         int checkQueueAttempts = 4;
         int zeroMetrics = 0;
         AccessMetric metric;
         ConcurrentHashMap<String , String> metricFormatted;
         while (checkQueueAttempts > 0) {
-            metric = logInputMetric.poll(1, TimeUnit.SECONDS);
+            metric = logInputMetric.poll(10, TimeUnit.SECONDS);
             metricFormatted = metric.format();
 
             if (metric.getTimestamp() == 0) {
@@ -55,6 +56,7 @@ public class ParserTest {
         }
 
         assertNull(logInputMetric.poll(1, TimeUnit.SECONDS));
+        Thread.sleep(1000);
         assertEquals(0, ((ThreadPoolExecutor) execParser).getActiveCount());
     }
 }

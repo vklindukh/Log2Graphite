@@ -18,7 +18,7 @@ public class AccessMetricParser {
     public static final String LOG_FINISHED = "__FINISH__";
 
     private HashMap<String, Integer> logFormat = new HashMap();
-    private final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
+    private static final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
     private Pattern logPattern = Pattern.compile(logEntryPattern);
     private Matcher matcher = logPattern.matcher("");
     private DateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss z");
@@ -52,7 +52,7 @@ public class AccessMetricParser {
         try {
             if (matchedFieldCounter == logFormat.get("fields")) {
                 if (!logFormat.containsKey("timestamp")) {
-                    throw new ParseException("no reqired field \"timestamp\"", 0);
+                    throw new ParseException("no required field \"timestamp\"", 0);
                 }
                 metric.setTimestamp(parseTimestamp(matchedField[logFormat.get("timestamp")].replace("\"", "").replace("'", "") + " " + matchedField[logFormat.get("timestamp") + 1].replace("\"", "").replace("'", "")));
                 metric.setMin(Short.parseShort(matchedField[logFormat.get("timestamp")].replace("\"", "").replace("'", "").substring(15, 17)));

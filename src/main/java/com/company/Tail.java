@@ -12,6 +12,7 @@ public class Tail {
     private static String logFile = null;
     private static BlockingQueue<String> logInputQueue;
     private static boolean tailerEnd = false;
+    private static long debugPeriod = System.currentTimeMillis();
 
     public Tail(String f, boolean e, BlockingQueue<String> q) {
         if (f.matches("^.*gz$")) {
@@ -30,6 +31,10 @@ public class Tail {
     public class MyListener extends TailerListenerAdapter {
         @Override
         public void handle(String line) {
+            if ((debugPeriod + 10000) < System.currentTimeMillis()) {
+                LOG.debug("current logInputQueue size : " + logInputQueue.size());
+                debugPeriod = System.currentTimeMillis();
+            }
             try {
                 logInputQueue.put(line);
             } catch (InterruptedException m) {

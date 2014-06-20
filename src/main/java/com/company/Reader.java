@@ -6,11 +6,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.zip.GZIPInputStream;
 
 public class Reader implements Runnable {
-
-    private static final Logger LOG = Logger.getLogger(Tail.class);
+    private static final Logger LOG = Logger.getLogger(Reader.class);
 
     private static String logFile = null;
     private static BlockingQueue<String> logInputQueue;
+    private static long debugPeriod = System.currentTimeMillis();
 
     public Reader(String f, BlockingQueue<String> q) {
         logFile = f;
@@ -28,8 +28,13 @@ public class Reader implements Runnable {
             } else {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
             }
+
             String s;
             while ((s = reader.readLine()) != null) {
+                if ((debugPeriod + 10000) < System.currentTimeMillis()) {
+                    LOG.debug("current logInputQueue size : " + logInputQueue.size());
+                    debugPeriod = System.currentTimeMillis();
+                }
                 logInputQueue.put(s);
             }
 
