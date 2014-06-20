@@ -31,6 +31,12 @@ public class Collector {
         this.metricAggregationTimeout = metricAggregationTimeout;
         if (s != null ) {
             graphiteServer = s;
+            try {
+                graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException m) {
+                System.out.println(m);
+                System.exit(255);
+            }
             uploadToGraphite = true;
             LOG.info("use Graphite server '" + s + "' for metric upload");
         } else {
