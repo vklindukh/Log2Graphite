@@ -15,12 +15,12 @@ public class Collector {
     private static BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricHashMap outputMetric;
 
-    private static final int WAIT_BEFORE_REMOVE = 120000;
+    private static final int WAIT_BEFORE_REMOVE = 60000;
+    private static final int UPLOAD_PERIOD = 10000;
     private static final int INPUT_METRIC_TIMEOUT = 3;
     private static final int INPUT_METRIC_TIMEOUT_NOTIFY = 100;
 
-
-
+    private boolean uploadToGraphite = false;
     private String graphiteServer;
     private static final int graphiteServerPort = 2003;
     private static String graphiteMetricBase = "access";
@@ -28,7 +28,13 @@ public class Collector {
     public Collector (BlockingQueue<AccessMetric> metrics, String s) throws UnknownHostException {
         logInputMetric = metrics;
         outputMetric = new AccessMetricHashMap();
-        graphiteServer = s;
+        if (s != null ) {
+            graphiteServer = s;
+            uploadToGraphite = true;
+            LOG.info("use Graphite server '" + s + "' for metric upload");
+        } else {
+            LOG.info("do not upload metric to Graphite");
+        }
         graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
     }
 
@@ -36,6 +42,7 @@ public class Collector {
         AccessMetric metric;
         boolean finished = false;
         int timeoutCounter = 0;
+        long uploadCounter = System.currentTimeMillis();
         while (!finished || !logInputMetric.isEmpty()) {
             metric = logInputMetric.poll(INPUT_METRIC_TIMEOUT, TimeUnit.SECONDS);
             //LOG.debug("metric : " + metric);
@@ -55,7 +62,10 @@ public class Collector {
                     timeoutCounter = 0;
                 }
             }
-            upload(false);
+            if ((uploadCounter + UPLOAD_PERIOD) < System.currentTimeMillis()) {
+                upload(false);
+                uploadCounter = System.currentTimeMillis();
+            }
         }
         upload(true);
     }
@@ -68,24 +78,24 @@ public class Collector {
             } else {
                 if (uploadAll ||
                         ((outputMetric.get(timestamp).getLastUploaded() == 0) &&
-                                (outputMetric.get(timestamp).getLastUpdated() < (new java.util.Date().getTime() - 3000))) ||
+                                ((outputMetric.get(timestamp).getLastUpdated() + 3000) < System.currentTimeMillis())) ||
                         ((outputMetric.get(timestamp).getLastUploaded() != 0) &&
                                 (outputMetric.get(timestamp).getLastUploaded() < outputMetric.get(timestamp).getLastUpdated()))
                         ) {
                     try {
                         boolean uploadStatus = false;
-                        while (!uploadStatus) {
+                        while (uploadToGraphite && !uploadStatus) {
                             uploadStatus = toGraphite(outputMetric.get(timestamp));
                         }
                         outputMetric.get(timestamp).setLastUploaded();
-                        LOG.info("upload :" + System.getProperty("line.separator") + outputMetric.get(timestamp));
+                        LOG.info("aggregated metric :" + System.getProperty("line.separator") + outputMetric.get(timestamp));
                     } catch (IOException e) {
                         LOG.error(e + " while sending metric to " + graphiteServer);
                         Thread.sleep(500);
                     }
                 }
                 if ((outputMetric.get(timestamp).getLastUploaded() != 0) &&
-                        outputMetric.get(timestamp).getLastUpdated() < (new java.util.Date().getTime() - WAIT_BEFORE_REMOVE)) {
+                        (outputMetric.get(timestamp).getLastUpdated() + WAIT_BEFORE_REMOVE) < System.currentTimeMillis()) {
                     outputMetric.remove(timestamp);
                     outputMetric.setLastUploadTime(timestamp);
                 }

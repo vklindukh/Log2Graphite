@@ -30,7 +30,7 @@ public class AccessMetric {
         this.methods.update(n.methods);
         this.types.update(n.types);
         this.codes.update(n.codes);
-        lastUpdated = new java.util.Date().getTime();
+        lastUpdated = System.currentTimeMillis();
         return true;
     }
 
@@ -59,7 +59,7 @@ public class AccessMetric {
     }
 
     public String toString() {
-        Date time=new Date(timestamp*1000);
+        Date time = new Date(timestamp * 1000);
         String s = "  timestamp : " + Long.toString(timestamp) + " [ " + time + " ]" + System.getProperty("line.separator");
         s += "  min : " + Short.toString(min) + System.getProperty("line.separator");
         s += "  requests : " + Long.toString(requests) + System.getProperty("line.separator");
@@ -149,7 +149,7 @@ public class AccessMetric {
     }
 
     public void setLastUpdated() {
-        lastUpdated = new java.util.Date().getTime();
+        lastUpdated = System.currentTimeMillis();
     }
 
     public long getLastUploaded() {
@@ -157,7 +157,7 @@ public class AccessMetric {
     }
 
     public void setLastUploaded() {
-        lastUploaded = new java.util.Date().getTime();
+        lastUploaded = System.currentTimeMillis();
     }
 
     class HttpMethod extends HashMapUpdater<String> {

@@ -43,6 +43,13 @@ public class Args {
         options.addOption(noTail);
 
         @SuppressWarnings("all")
+        Option noGraphite = OptionBuilder.withArgName("nographite")
+                .hasArg(false)
+                .withDescription("do not sent data to Graphite")
+                .create("nographite");
+        options.addOption(noGraphite);
+
+        @SuppressWarnings("all")
         Option tailerEnd = OptionBuilder.withArgName("start")
                 .hasArg(false)
                 .withDescription("process log from start of file if true. default is false")
@@ -89,6 +96,10 @@ public class Args {
         return (cmd.hasOption("notail"));
     }
 
+    public boolean getOptionNoGraphite() {
+        return (cmd.hasOption("nographite"));
+    }
+
     public String getLogPath() {
         return cmd.getOptionValue("f");
     }
@@ -96,7 +107,6 @@ public class Args {
     public String getConfigFile() {
         return cmd.getOptionValue("c");
     }
-
 
     public String getGraphiteHost() {
         return cmd.getOptionValue("h");
