@@ -1,4 +1,4 @@
-package com.company;
+package com.company.log2graphite;
 
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;

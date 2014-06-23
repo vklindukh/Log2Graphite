@@ -1,4 +1,4 @@
-package com.company;
+package com.company.log2graphite.utils;
 
 import org.apache.log4j.Logger;
 
@@ -19,7 +19,7 @@ public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
             }
             lastUpdateTime = System.currentTimeMillis();
         } else {
-            LOG.error("gor too old metric " + m.getTimestamp());
+            LOG.error("got too old metric " + m.getTimestamp());
         }
     }
 

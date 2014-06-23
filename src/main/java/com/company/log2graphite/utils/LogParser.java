@@ -1,4 +1,4 @@
-package com.company;
+package com.company.log2graphite.utils;
 
 import org.apache.log4j.Logger;
 
@@ -6,8 +6,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class Parser implements Runnable {
-    private static final Logger LOG = Logger.getLogger(Parser.class);
+public class LogParser implements Runnable {
+    private static final Logger LOG = Logger.getLogger(LogParser.class);
 
     private ArrayBlockingQueue<String> logInputQueue;
     private ArrayBlockingQueue<AccessMetric> logInputMetric;
@@ -16,7 +16,7 @@ public class Parser implements Runnable {
     private long aggregatedMetricTimestamp = 0;
     private long queueUpdateLastTime = 0;
 
-    public Parser(ArrayBlockingQueue<String> q, ArrayBlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
+    public LogParser(ArrayBlockingQueue<String> q, ArrayBlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
         logInputQueue = q;
         logInputMetric = m;
         metricParser = new AccessMetricParser(logFormat);

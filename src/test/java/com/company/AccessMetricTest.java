@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.log2graphite.utils.AccessMetric;
+import com.company.log2graphite.utils.AccessMetricParser;
 import org.junit.Test;
 
 import java.text.ParseException;

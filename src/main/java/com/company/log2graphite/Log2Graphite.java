@@ -1,8 +1,8 @@
-package com.company;
+package com.company.log2graphite;
 
+import com.company.log2graphite.utils.*;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.UnknownHostException;
@@ -41,7 +41,7 @@ public class Log2Graphite {
             AccessMetricParser accessMetricParser = new AccessMetricParser(cli.getLogFormat());
             ExecutorService execParser = Executors.newFixedThreadPool(cli.getParserNumThreads());
             for (int i = 0; i < cli.getParserNumThreads(); i++) {
-                execParser.execute(new Parser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat()));
+                execParser.execute(new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat()));
             }
 
             // run collector
