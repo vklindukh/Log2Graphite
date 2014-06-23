@@ -15,12 +15,15 @@ public class Log2Graphite {
     private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(10240);
 
     private static Args cli;
+    private static Props properties;
+
 
     public static void main(String[] args) {
         LOG.info("started Log2Graphite " + ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
 
         try {
             cli = new Args(args);
+            properties = new Props(cli.getConfigFile());
         } catch (ParseException | IOException m) {
             System.err.println(m);
             System.exit(255);
@@ -38,7 +41,7 @@ public class Log2Graphite {
             }
 
             // run parsers
-            AccessMetricParser accessMetricParser = new AccessMetricParser(cli.getLogFormat());
+            AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
             ExecutorService execParser = Executors.newFixedThreadPool(cli.getParserNumThreads());
             for (int i = 0; i < cli.getParserNumThreads(); i++) {
                 execParser.execute(new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat()));
