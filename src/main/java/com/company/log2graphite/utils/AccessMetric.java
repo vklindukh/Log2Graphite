@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 public class AccessMetric {
     private long timestamp = 0;
     private short min = 0;

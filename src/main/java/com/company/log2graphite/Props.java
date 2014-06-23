@@ -10,7 +10,7 @@ import java.util.Properties;
 public class Props {
     private static final Logger LOG = Logger.getLogger(Props.class);
 
-    Properties properties = new java.util.Properties();
+    private Properties properties = new java.util.Properties();
 
     public Props(String configFile) throws IOException {
         properties.load(Args.class.getClassLoader().getResourceAsStream("conf.properties"));

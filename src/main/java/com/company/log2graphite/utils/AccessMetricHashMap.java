@@ -1,7 +1,6 @@
 package com.company.log2graphite.utils;
 
 import org.apache.log4j.Logger;
-
 import java.util.concurrent.*;
 
 public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {

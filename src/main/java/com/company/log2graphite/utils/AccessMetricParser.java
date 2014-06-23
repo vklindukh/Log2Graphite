@@ -1,7 +1,6 @@
 package com.company.log2graphite.utils;
 
 import org.apache.log4j.Logger;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 public class AccessMetricParser {
     private static final Logger LOG = Logger.getLogger(AccessMetricParser.class);

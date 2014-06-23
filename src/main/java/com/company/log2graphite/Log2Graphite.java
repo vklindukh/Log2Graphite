@@ -17,7 +17,6 @@ public class Log2Graphite {
     private static Args cli;
     private static Props properties;
 
-
     public static void main(String[] args) {
         LOG.info("started Log2Graphite " + ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
 

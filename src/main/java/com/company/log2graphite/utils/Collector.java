@@ -1,7 +1,6 @@
 package com.company.log2graphite.utils;
 
 import org.apache.log4j.Logger;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
@@ -19,7 +18,6 @@ public class Collector {
     private static final int UPLOAD_PERIOD = 10000;
     private static final int INPUT_METRIC_TIMEOUT = 3;
     private static final int INPUT_METRIC_TIMEOUT_NOTIFY = 60000;
-
 
     private static boolean uploadToGraphite = false;
     private static String graphiteServer;
