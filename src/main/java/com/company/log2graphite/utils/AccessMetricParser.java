@@ -15,7 +15,7 @@ public class AccessMetricParser {
 
     public static final String LOG_FINISHED = "__FINISH__";
 
-    private HashMap<String, Integer> logFormat = new HashMap();
+    private HashMap<String, Integer> logFormat = new HashMap<>();
     private static final String logEntryPattern = "([^\\s\"]+|(?:[^\\s\"]*\"[^\"]*\"[^\\s\"]*)+)(?:\\s|$)";
     private Pattern logPattern = Pattern.compile(logEntryPattern);
     private Matcher matcher = logPattern.matcher("");
@@ -95,15 +95,15 @@ public class AccessMetricParser {
         LOG.info("got access log format : " + s);
 
         String[] fields = s.replaceAll("['\"\\[\\];]", "").split("\\s+");
-        Map<String, Integer> fieldsHash = new HashMap();
+        Map<String, Integer> fieldsHash = new HashMap<>();
         for (int i = 0; i < fields.length; i++) {
             fieldsHash.put(fields[i], i);
         }
 
         String requiredFields[] = {"$time_local"};
-        for (int i = 0; i < requiredFields.length; i++) {
-            if (!fieldsHash.containsKey(requiredFields[i])) {
-                throw new ParseException("no required field $time_local", 0);
+        for (String requiredKey : requiredFields) {
+            if (!fieldsHash.containsKey(requiredKey)) {
+                throw new ParseException("no required field '" + requiredKey + "' found", 0);
             }
         }
 
@@ -114,7 +114,7 @@ public class AccessMetricParser {
             logFormat.put("timestamp", fieldsHash.get("$time_local"));
         }
 
-        Map<String, String> knownFields = new HashMap();
+        Map<String, String> knownFields = new HashMap<>();
         knownFields.put("$time_local", "timestamp");
         knownFields.put("$body_bytes_sent", "size");
         knownFields.put("$request", "request");

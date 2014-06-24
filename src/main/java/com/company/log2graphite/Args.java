@@ -1,12 +1,9 @@
 package com.company.log2graphite;
 
 import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
 import java.io.*;
 
 public class Args {
-    private static final Logger LOG = Logger.getLogger(Args.class);
-
     private Options options = new Options();
     private CommandLine cmd;
 
@@ -17,52 +14,55 @@ public class Args {
 
     private void optionsInit() {
         @SuppressWarnings("all")
-        Option configFile = OptionBuilder.withArgName("config")
+        Option configFile = OptionBuilder.withArgName("path to config file")
                 .hasArg(true)
-                .withDescription("config file")
+                .withDescription("optional")
                 .create("c");
         options.addOption(configFile);
 
         @SuppressWarnings("all")
-        Option inputFile = OptionBuilder.withArgName("filepath")
+        Option inputFile = OptionBuilder.withArgName("path to log file")
                 .hasArg(true)
                 .isRequired()
-                .withDescription("log file")
+                .withDescription("required")
                 .create("f");
         options.addOption(inputFile);
 
         @SuppressWarnings("all")
-        Option noTail = OptionBuilder.withArgName("notail")
+        Option noTail = OptionBuilder.withArgName("")
                 .hasArg(false)
-                .withDescription("parse file till end and exit")
+                .withDescription("optional: parse single file without tail")
                 .create("notail");
         options.addOption(noTail);
 
         @SuppressWarnings("all")
-        Option tailerEnd = OptionBuilder.withArgName("start")
+        Option tailerEnd = OptionBuilder.withArgName("")
                 .hasArg(false)
-                .withDescription("process log from start of file if true. default is false")
+                .withDescription("optional: tail log from start" +
+                        System.getProperty("line.separator") + "default is tail log file from end")
                 .create("start");
         options.addOption(tailerEnd);
 
         @SuppressWarnings("all")
-        Option parserThreads = OptionBuilder
+        Option parserThreads = OptionBuilder.withArgName("parsers")
                 .hasArg(true)
-                .withDescription("number of parsers. default is 1 parser)")
+                .withDescription("optional: number of parsers" +
+                        System.getProperty("line.separator") + "default is 1 parser")
                 .create("t");
         options.addOption(parserThreads);
 
         @SuppressWarnings("all")
         Option graphiteHost = OptionBuilder.withArgName("host")
                 .hasArg(true)
-                .withDescription("Graphite host IP")
+                .withDescription("optional: Graphite host IP")
                 .create("h");
         options.addOption(graphiteHost);
 
         @SuppressWarnings("all")
-        Option aggregateMetricTimeout = OptionBuilder.withArgName("aggregate_time")
+        Option aggregateMetricTimeout = OptionBuilder.withArgName("seconds")
                 .hasArg(true)
-                .withDescription("aggregate metric timeout in seconds. default is 60")
+                .withDescription("optional: aggregate metric timeout" +
+                        System.getProperty("line.separator") + "default is 60")
                 .create("atime");
         options.addOption(aggregateMetricTimeout);
     }

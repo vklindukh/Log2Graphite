@@ -26,13 +26,13 @@ public class Collector {
 
     public Collector (BlockingQueue<AccessMetric> logInputMetric, String s, int metricAggregationTimeout) throws UnknownHostException {
         this.logInputMetric = logInputMetric;
-        this.metricAggregationTimeout = metricAggregationTimeout;
+        Collector.metricAggregationTimeout = metricAggregationTimeout;
         if (s != null ) {
             graphiteServer = s;
             try {
                 graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
             } catch (UnknownHostException m) {
-                System.out.println(m);
+                System.out.println(m.getMessage());
                 System.exit(255);
             }
             uploadToGraphite = true;

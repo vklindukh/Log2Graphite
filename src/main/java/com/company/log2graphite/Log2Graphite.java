@@ -11,8 +11,8 @@ import java.util.concurrent.*;
 public class Log2Graphite {
     private static final Logger LOG = Logger.getLogger(Log2Graphite.class);
 
-    private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<String>(10240);
-    private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(10240);
+    private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<>(10240);
+    private static BlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<>(10240);
 
     private static Args cli;
     private static Props properties;
@@ -30,7 +30,7 @@ public class Log2Graphite {
 
         try {
             if (cli.getOptionNoTail()) {
-                LOG.info("read " + cli.getLogPath() + " and exit");
+                LOG.info("read '" + cli.getLogPath() + "' and exit");
                 ExecutorService execParser = Executors.newFixedThreadPool(1);
                 execParser.execute(new Reader(cli.getLogPath(), logInputQueue));
             } else {

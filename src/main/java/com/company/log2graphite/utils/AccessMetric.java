@@ -40,7 +40,7 @@ public class AccessMetric {
     }
 
     public ConcurrentHashMap<String, String> format() {
-        ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap();
+        ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap<>();
         metricFormatted.put("timestamp", Long.toString(timestamp));
         if (timestamp == 0) {
             return metricFormatted;
@@ -85,40 +85,20 @@ public class AccessMetric {
         this.timestamp = timestamp;
     }
 
-    public short getMin() {
-        return min;
-    }
-
     public void setMin(short min) {
         this.min = min;
-    }
-
-    public long getRequests() {
-        return requests;
     }
 
     public void setRequests(long requests) {
         this.requests = requests;
     }
 
-    public long getSize() {
-        return size;
-    }
-
     public void setSize(long size) {
         this.size = size;
     }
 
-    public float getRequest_time() {
-        return request_time;
-    }
-
     public void setRequest_time(float request_time) {
         this.request_time = request_time;
-    }
-
-    public float getUpstream_time() {
-        return upstream_time;
     }
 
     public void setUpstream_time(float upstream_time) {
@@ -129,24 +109,12 @@ public class AccessMetric {
         return methods;
     }
 
-    public void setMethods(HttpMethod methods) {
-        this.methods = methods;
-    }
-
     public adType getTypes() {
         return types;
     }
 
-    public void setTypes(adType types) {
-        this.types = types;
-    }
-
     public responseCode getCodes() {
         return codes;
-    }
-
-    public void setCodes(responseCode codes) {
-        this.codes = codes;
     }
 
     public long getLastUpdated() {

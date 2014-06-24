@@ -3,19 +3,19 @@ package com.company.log2graphite.utils;
 import org.apache.log4j.Logger;
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class LogParser implements Runnable {
     private static final Logger LOG = Logger.getLogger(LogParser.class);
 
-    private ArrayBlockingQueue<String> logInputQueue;
-    private ArrayBlockingQueue<AccessMetric> logInputMetric;
+    private BlockingQueue<String> logInputQueue;
+    private BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricParser metricParser;
     private AccessMetric aggregatedMetric = new AccessMetric();
     private long aggregatedMetricTimestamp = 0;
     private long queueUpdateLastTime = 0;
 
-    public LogParser(ArrayBlockingQueue<String> q, ArrayBlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
+    public LogParser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
         logInputQueue = q;
         logInputMetric = m;
         metricParser = new AccessMetricParser(logFormat);
