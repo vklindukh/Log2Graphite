@@ -65,12 +65,12 @@ use custom log4j.properties in classpath to override.
 Usage examples
 --------------
 
-tail access.log in realtime and upload metrics to Graphite
+tail access.log in realtime from the beginning and upload metrics to Graphite. 
 ```
-...
+java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f <path to access.log> -t 4 -h <IP> -start
 ```
 
 parse archived access.log and upload metrics to Graphite
 ```
-...
+java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f <path to access.log-20140101.gz> -t 10 -h <IP> -notail
 ```
