@@ -1,24 +1,19 @@
-package com.company;
+package com.company.log2graphite;
 
 import com.company.log2graphite.utils.AccessMetric;
 import com.company.log2graphite.utils.AccessMetricParser;
 import org.junit.Test;
-
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AccessMetricParserTest {
 
-
-    String s = null;
     @Test(expected = IllegalStateException.class)
     public void parsePropertiesWithException1() throws ParseException {
-        String s = null;
-        new AccessMetricParser(s);
+        new AccessMetricParser((String) null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -91,8 +86,7 @@ public class AccessMetricParserTest {
 
         ConcurrentHashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(8, metricFormatted.size());
-        assertEquals(1402544220L, Long.parseLong(metricFormatted.get("timestamp")));
+        assertEquals(7, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
@@ -127,8 +121,7 @@ public class AccessMetricParserTest {
 
         ConcurrentHashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(6, metricFormatted.size());
-        assertEquals(1402544220L, Long.parseLong(metricFormatted.get("timestamp")));
+        assertEquals(5, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);

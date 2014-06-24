@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 public class Log2Graphite {
     private static final Logger LOG = Logger.getLogger(Log2Graphite.class);
 
-    private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<>(10240);
+    private static BlockingQueue<String> logInputQueue = new ArrayBlockingQueue<>(10240);
     private static BlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<>(10240);
 
     private static Args cli;
@@ -48,7 +48,8 @@ public class Log2Graphite {
 
             // run collector
             try {
-                Collector collector = new Collector(logInputMetric, cli.getGraphiteHost(), cli.getAggregateMetricTimeout());
+                MetricReceiver receiver = new Graphite(cli.getGraphiteHost(), cli.getGraphitePort());
+                Collector collector = new Collector(logInputMetric, cli.getAggregateMetricTimeout(), receiver);
                 collector.run();
             } catch (UnknownHostException | InterruptedException m) {
                 LOG.fatal(m);

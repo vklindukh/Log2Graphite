@@ -41,10 +41,11 @@ public class AccessMetric {
 
     public ConcurrentHashMap<String, String> format() {
         ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap<>();
-        metricFormatted.put("timestamp", Long.toString(timestamp));
-        if (timestamp == 0) {
+
+        if (requests == 0) {
             return metricFormatted;
         }
+
         metricFormatted.put("requests", Long.toString(requests));
         metricFormatted.put("size", Long.toString(size / requests));
         metricFormatted.put("request_time", Float.toString(request_time / requests));

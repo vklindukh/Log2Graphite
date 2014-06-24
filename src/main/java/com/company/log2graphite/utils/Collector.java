@@ -1,7 +1,6 @@
 package com.company.log2graphite.utils;
 
 import org.apache.log4j.Logger;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.Map;
@@ -13,33 +12,17 @@ public class Collector {
 
     private BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricHashMap outputMetric;
+    private static MetricReceiver receiver;
 
     private static int metricAggregationTimeout;
     private static final int UPLOAD_PERIOD = 10000;
     private static final int INPUT_METRIC_TIMEOUT = 3;
     private static final int INPUT_METRIC_TIMEOUT_NOTIFY = 60000;
 
-    private static boolean uploadToGraphite = false;
-    private static String graphiteServer;
-    private static final int graphiteServerPort = 2003;
-    private static String graphiteMetricBase = "access";
-
-    public Collector (BlockingQueue<AccessMetric> logInputMetric, String s, int metricAggregationTimeout) throws UnknownHostException {
+    public Collector (BlockingQueue<AccessMetric> logInputMetric, int metricAggregationTimeout, MetricReceiver receiver) throws UnknownHostException {
         this.logInputMetric = logInputMetric;
+        Collector.receiver = receiver;
         Collector.metricAggregationTimeout = metricAggregationTimeout;
-        if (s != null ) {
-            graphiteServer = s;
-            try {
-                graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException m) {
-                System.out.println(m.getMessage());
-                System.exit(255);
-            }
-            uploadToGraphite = true;
-            LOG.info("use Graphite server '" + s + "' for metric upload");
-        } else {
-            LOG.info("do not upload metric to Graphite");
-        }
         outputMetric = new AccessMetricHashMap();
     }
 
@@ -89,14 +72,17 @@ public class Collector {
                                 (outputMetric.get(timestamp).getLastUploaded() + 5000 < System.currentTimeMillis()))
                         ) {
                     try {
+                        Map<String , String> metricFormatted = outputMetric.get(timestamp).format();
                         boolean uploadStatus = false;
-                        while (uploadToGraphite && !uploadStatus) {
-                            uploadStatus = toGraphite(outputMetric.get(timestamp));
+
+                        while (!uploadStatus) {
+                            uploadStatus = receiver.sent(timestamp, metricFormatted);
                         }
+
                         outputMetric.get(timestamp).setLastUploaded();
                         LOG.info("aggregated metric :" + System.getProperty("line.separator") + outputMetric.get(timestamp));
                     } catch (IOException e) {
-                        LOG.error(e + " while sending metric to " + graphiteServer);
+                        LOG.error(e + " while sending metric to " + receiver.getName());
                         Thread.sleep(500);
                     }
                 }
@@ -108,25 +94,5 @@ public class Collector {
                 }
             }
         }
-    }
-
-    private boolean toGraphite(AccessMetric metric) throws IOException {
-        SocketAddress address = new InetSocketAddress(graphiteServer, graphiteServerPort);
-        Socket clientSocket = new Socket();
-        clientSocket.connect(address, 10000);
-        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-
-        Map<String , String> metricFormatted = metric.format();
-        for (String metricName : metricFormatted.keySet()) {
-            if (!metricFormatted.get("timestamp").equals("0")) {
-                if (!metricName.equals("timestamp")) {
-                    outToServer.writeBytes(graphiteMetricBase + "." + metricName + " " +
-                            metricFormatted.get(metricName) + " " + metricFormatted.get("timestamp") +
-                            System.getProperty("line.separator"));
-                }
-            }
-        }
-        clientSocket.close();
-        return true;
     }
 }

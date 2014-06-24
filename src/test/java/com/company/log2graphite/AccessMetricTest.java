@@ -1,4 +1,4 @@
-package com.company;
+package com.company.log2graphite;
 
 import com.company.log2graphite.utils.AccessMetric;
 import com.company.log2graphite.utils.AccessMetricParser;
@@ -20,7 +20,7 @@ public class AccessMetricTest {
                 "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';");
 
         String s = "68.171.238.156 - - [12/Jun/2014:03:37:02 +0000] a a a a a a a a a a a";
-        AccessMetric metric = metricParser.parse(s);
+        metricParser.parse(s);
     }
 
     @Test(expected = ParseException.class)
@@ -30,7 +30,7 @@ public class AccessMetricTest {
                 "           '\"$connection_requests\" \"$http_connection\" '" +
                 "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';");
         String s = "a a a [AA/Jun/2014:AA:37:02 +AAAAA a a a a a a a a a a a";
-        AccessMetric metric = metricParser.parse(s);
+        metricParser.parse(s);
     }
 
     @org.junit.Test
@@ -47,8 +47,7 @@ public class AccessMetricTest {
 
         ConcurrentHashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(8, metricFormatted.size());
-        assertEquals(1402544220L, Long.parseLong(metricFormatted.get("timestamp")));
+        assertEquals(7, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
@@ -64,8 +63,7 @@ public class AccessMetricTest {
 
         metricFormatted = metric.format();
 
-        assertEquals(8, metricFormatted.size());
-        assertEquals(1402960980L, Long.parseLong(metricFormatted.get("timestamp")));
+        assertEquals(7, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(0L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(60.001, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);

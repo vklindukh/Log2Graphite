@@ -1,11 +1,9 @@
-package com.company;
+package com.company.log2graphite;
 
 import com.company.log2graphite.utils.AccessMetric;
 import com.company.log2graphite.utils.AccessMetricHashMap;
 import com.company.log2graphite.utils.AccessMetricParser;
-
 import java.util.concurrent.ConcurrentHashMap;
-
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -39,8 +37,7 @@ public class AccessMetricHashMapTest {
 
         ConcurrentHashMap<String , String> metricFormatted = h.get(1402544220L).format();
 
-        assertEquals(8, metricFormatted.size());
-        assertEquals(1402544220L, Long.parseLong(metricFormatted.get("timestamp")));
+        assertEquals(7, metricFormatted.size());
         assertEquals(2L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
@@ -51,8 +48,7 @@ public class AccessMetricHashMapTest {
 
         metricFormatted = h.get(1402544280L).format();
 
-        assertEquals(8, metricFormatted.size());
-        assertEquals(1402544280L, Long.parseLong(metricFormatted.get("timestamp")));
+        assertEquals(7, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);

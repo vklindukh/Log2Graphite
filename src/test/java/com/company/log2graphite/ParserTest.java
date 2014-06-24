@@ -1,18 +1,16 @@
-package com.company;
+package com.company.log2graphite;
 
 import com.company.log2graphite.utils.AccessMetric;
 import com.company.log2graphite.utils.AccessMetricParser;
 import com.company.log2graphite.utils.LogParser;
-
 import java.util.concurrent.*;
-
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 public class ParserTest {
 
-    private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<String>(10);
-    private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<AccessMetric>(10);
+    private static ArrayBlockingQueue<String> logInputQueue = new ArrayBlockingQueue<>(10);
+    private static ArrayBlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<>(10);
 
     @org.junit.Test
     public void parse() throws Exception {
@@ -34,7 +32,6 @@ public class ParserTest {
         Thread.sleep(2000);
 
         int checkQueueAttempts = 4;
-        int zeroMetrics = 0;
         AccessMetric metric;
         ConcurrentHashMap<String , String> metricFormatted;
         while (checkQueueAttempts > 0) {
@@ -42,12 +39,9 @@ public class ParserTest {
             metricFormatted = metric.format();
 
             if (metric.getTimestamp() == 0) {
-                assertEquals(1, metricFormatted.size());
-                assertEquals(0L, Long.parseLong(metricFormatted.get("timestamp")));
-                zeroMetrics++;
+                assertEquals(0, metricFormatted.size());
             } else {
-                assertEquals(8, metricFormatted.size());
-                assertEquals(1402544220L, Long.parseLong(metricFormatted.get("timestamp")));
+                assertEquals(7, metricFormatted.size());
                 assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
                 assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
                 assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);

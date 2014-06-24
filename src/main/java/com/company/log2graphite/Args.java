@@ -59,6 +59,14 @@ public class Args {
         options.addOption(graphiteHost);
 
         @SuppressWarnings("all")
+        Option graphitePort = OptionBuilder.withArgName("port")
+                .hasArg(true)
+                .withDescription("optional: Graphite TCP port" +
+                                System.getProperty("line.separator") + "default is 2003")
+                .create("p");
+        options.addOption(graphitePort);
+
+        @SuppressWarnings("all")
         Option aggregateMetricTimeout = OptionBuilder.withArgName("seconds")
                 .hasArg(true)
                 .withDescription("optional: aggregate metric timeout" +
@@ -107,4 +115,10 @@ public class Args {
     public String getGraphiteHost() {
         return cmd.getOptionValue("h");
     }
+
+    public int getGraphitePort() {
+        String s = (cmd.getOptionValue("p") == null) ? "2003" : cmd.getOptionValue("p");
+        return Integer.parseInt(s);
+    }
+
 }
