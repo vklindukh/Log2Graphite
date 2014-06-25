@@ -12,8 +12,8 @@ public class LogParser implements Runnable {
     private BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricParser metricParser;
     private AccessMetric aggregatedMetric = new AccessMetric();
-    private long aggregatedMetricTimestamp = 0;
-    private long queueUpdateLastTime = 0;
+    private long aggregatedMetricTimestamp;
+    private long queueUpdateLastTime;
 
     public LogParser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
         logInputQueue = q;

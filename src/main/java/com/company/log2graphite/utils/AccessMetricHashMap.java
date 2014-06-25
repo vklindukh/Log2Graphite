@@ -6,8 +6,8 @@ import java.util.concurrent.*;
 public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
     private static final Logger LOG = Logger.getLogger(AccessMetricHashMap.class);
 
-    private long lastUploadTime = 0;
-    private long lastUpdateTime = 0;
+    private long lastUploadTime;
+    private long lastUpdateTime;
 
     public void update(AccessMetric m) {
         if (m.getTimestamp() > lastUploadTime) {

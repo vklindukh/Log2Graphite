@@ -6,17 +6,17 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AccessMetric {
-    private long timestamp = 0;
-    private short min = 0;
-    private long requests = 0;
-    private long size = 0;
-    private float request_time = 0;
-    private float upstream_time = 0;
+    private long timestamp;
+    private short min;
+    private long requests;
+    private long size;
+    private float request_time;
+    private float upstream_time;
     private HttpMethod methods = new HttpMethod();
     private adType types = new adType();
-    private responseCode codes = new responseCode();
-    private Long lastUpdated = 0L;
-    private Long lastUploaded = 0L;
+    private ResponseCode codes = new ResponseCode();
+    private long lastUpdated;
+    private long lastUploaded;
 
     public synchronized boolean update(AccessMetric n) {
         if (this.timestamp != n.timestamp) {
@@ -114,7 +114,7 @@ public class AccessMetric {
         return types;
     }
 
-    public responseCode getCodes() {
+    public ResponseCode getCodes() {
         return codes;
     }
 
@@ -171,7 +171,7 @@ public class AccessMetric {
         }
     }
 
-    class responseCode extends HashMapUpdater<Integer> {
+    class ResponseCode extends HashMapUpdater<Integer> {
 
     }
 
