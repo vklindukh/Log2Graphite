@@ -81,3 +81,11 @@ parse archived access.log from S3 and upload metrics to Graphite
 java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f s3://bucket/path/to/access.log.gz -t 10 -h <IP> -notail -key <S3 access key> -secret <S3 secret key>
 ```
 
+Performance
+--------------
+
+Tested on c3.8xlarge AWS instance. Log2Graphite started with 10 Parser threads
+
+10G archived access.log.gz : ~9 minutes
+60G raw access.log : ~4 minutes
+S3 : not tested yet
