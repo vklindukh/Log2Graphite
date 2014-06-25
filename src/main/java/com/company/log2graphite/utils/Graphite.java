@@ -12,20 +12,21 @@ public class Graphite implements MetricReceiver {
 
     private boolean senderEnabled = false;
     private SocketAddress address;
-    private Socket clientSocket;
-    private static String graphiteServer;
-    private static final int graphiteServerPort = 2003;
-    private static String graphiteMetricBase = "access";
+    private static String graphiteMetricBase;
 
     public Graphite (String graphiteServer, int graphiteServerPort) {
         if (graphiteServer != null) {
-            address = new InetSocketAddress(graphiteServer, graphiteServerPort);
-            clientSocket = new Socket();
             try {
-                graphiteMetricBase += "." + InetAddress.getLocalHost().getHostName();
-                LOG.info("upload metric to Graphite server '" + graphiteServer + "'");
+            address = new InetSocketAddress(graphiteServer, graphiteServerPort);
+                String hostname = InetAddress.getLocalHost().getHostName();
+                if (hostname != null) {
+                    graphiteMetricBase = "access." + hostname;
+                } else {
+                    graphiteMetricBase = "access";
+                }
+                LOG.info("upload metric to Graphite server '" + graphiteServer + "'" + " with metric prefix '" + graphiteMetricBase + "'");
             } catch (UnknownHostException m) {
-                System.out.println(m.getMessage());
+                System.err.println(m.getMessage());
                 System.exit(255);
             }
             senderEnabled = true;
@@ -40,6 +41,7 @@ public class Graphite implements MetricReceiver {
 
     public boolean sent(Long timestamp, Map<String , String> metricsPair) throws IOException {
         if (senderEnabled) {
+            Socket clientSocket = new Socket();
             clientSocket.connect(address, 10000);
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 

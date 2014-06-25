@@ -82,7 +82,7 @@ public class Collector {
                         outputMetric.get(timestamp).setLastUploaded();
                         LOG.info("aggregated metric :" + System.getProperty("line.separator") + outputMetric.get(timestamp));
                     } catch (IOException e) {
-                        LOG.error(e + " while sending metric to " + receiver.getName());
+                        LOG.error(e.getMessage() + " while sending metric to " + receiver.getName());
                         Thread.sleep(500);
                     }
                 }
