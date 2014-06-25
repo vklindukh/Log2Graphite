@@ -9,7 +9,7 @@ In addition it supports non-realtime operation (reparsing olg logs).
 Usage
 ---------------
 ```
-usage: Log2Graphite -f <filepath> [ -c <config> -h <host> -t <arg> -atime <aggregate_time> -notail -start ]
+usage: Log2Graphite -f <filepath> [ options ]
  -atime <aggregate_time>   aggregate metric timeout in seconds. default is 60
  -c <config>               path to config file
  -f <filepath>             path to log file
@@ -17,6 +17,8 @@ usage: Log2Graphite -f <filepath> [ -c <config> -h <host> -t <arg> -atime <aggre
  -notail                   parse single file without tail
  -start                    tail log from start. without option application start tail log file from end
  -t <arg>                  number of parsers. by default is 1 parser
+ -key <AWS access key>     S3 access key
+ -secret <AWS secret key>  S3 secret key
 ```
 
 Config file format
@@ -74,3 +76,8 @@ parse archived access.log and upload metrics to Graphite
 ```
 java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f <path to access.log-20140101.gz> -t 10 -h <IP> -notail
 ```
+parse archived access.log from S3 and upload metrics to Graphite
+```
+java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f s3://bucket/path/to/access.log.gz -t 10 -h <IP> -notail
+```
+
