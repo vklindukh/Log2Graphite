@@ -78,6 +78,6 @@ java -classpath <path to config file>:<path to jar file> com.company.log2graphit
 ```
 parse archived access.log from S3 and upload metrics to Graphite
 ```
-java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f s3://bucket/path/to/access.log.gz -t 10 -h <IP> -notail
+java -classpath <path to config file>:<path to jar file> com.company.log2graphite.Log2Graphite -f s3://bucket/path/to/access.log.gz -t 10 -h <IP> -notail -key <S3 access key> -secret <S3 secret key>
 ```
 
