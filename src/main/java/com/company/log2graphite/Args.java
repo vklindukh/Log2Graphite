@@ -84,7 +84,7 @@ public class Args {
         @SuppressWarnings("all")
         Option awsSecretKey = OptionBuilder.withArgName("AWS secret key")
                 .hasArg(true)
-                .withDescription("optional: S3 SECRET key")
+                .withDescription("optional: S3 secret key")
                 .create("secret");
         options.addOption(awsSecretKey);
     }
