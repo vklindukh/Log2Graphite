@@ -1,9 +1,9 @@
-package com.company.log2graphite.utils;
+package com.company.log2graphite.core;
 
 import org.apache.log4j.Logger;
-import java.util.concurrent.*;
+import java.util.HashMap;
 
-public class AccessMetricHashMap extends ConcurrentHashMap<Long, AccessMetric> {
+public class AccessMetricHashMap extends HashMap<Long, AccessMetric> {
     private static final Logger LOG = Logger.getLogger(AccessMetricHashMap.class);
 
     private long lastUploadTime;

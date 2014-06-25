@@ -1,8 +1,9 @@
 package com.company.log2graphite;
 
-import com.company.log2graphite.utils.AccessMetric;
-import com.company.log2graphite.utils.AccessMetricParser;
-import com.company.log2graphite.utils.LogParser;
+import com.company.log2graphite.core.AccessMetric;
+import com.company.log2graphite.core.AccessMetricParser;
+import com.company.log2graphite.core.LogParser;
+import java.util.HashMap;
 import java.util.concurrent.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,7 @@ public class ParserTest {
 
         int checkQueueAttempts = 4;
         AccessMetric metric;
-        ConcurrentHashMap<String , String> metricFormatted;
+        HashMap<String , String> metricFormatted;
         while (checkQueueAttempts > 0) {
             metric = logInputMetric.poll(10, TimeUnit.SECONDS);
             metricFormatted = metric.format();

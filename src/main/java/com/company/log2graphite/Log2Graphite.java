@@ -1,6 +1,6 @@
 package com.company.log2graphite;
 
-import com.company.log2graphite.utils.*;
+import com.company.log2graphite.core.*;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 import java.io.IOException;

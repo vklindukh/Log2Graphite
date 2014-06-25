@@ -1,4 +1,4 @@
-package com.company.log2graphite.utils;
+package com.company.log2graphite.core;
 
 import org.apache.log4j.Logger;
 import java.text.DateFormat;

@@ -1,4 +1,4 @@
-package com.company.log2graphite.utils;
+package com.company.log2graphite.core;
 
 import java.io.File;
 import java.util.concurrent.BlockingQueue;

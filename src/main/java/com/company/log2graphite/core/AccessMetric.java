@@ -1,9 +1,8 @@
-package com.company.log2graphite.utils;
+package com.company.log2graphite.core;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class AccessMetric {
     private long timestamp;
@@ -19,9 +18,6 @@ public class AccessMetric {
     private long lastUploaded;
 
     public synchronized boolean update(AccessMetric n) {
-        if (this.timestamp != n.timestamp) {
-            return false;
-        }
         this.requests += n.requests;
         this.size += n.size;
         this.request_time += n.request_time;
@@ -39,8 +35,8 @@ public class AccessMetric {
         return (update(n));
     }
 
-    public ConcurrentHashMap<String, String> format() {
-        ConcurrentHashMap<String, String> metricFormatted = new ConcurrentHashMap<>();
+    public HashMap<String, String> format() {
+        HashMap<String, String> metricFormatted = new HashMap<>();
 
         if (requests == 0) {
             return metricFormatted;

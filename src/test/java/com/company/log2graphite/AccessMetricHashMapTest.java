@@ -1,9 +1,9 @@
 package com.company.log2graphite;
 
-import com.company.log2graphite.utils.AccessMetric;
-import com.company.log2graphite.utils.AccessMetricHashMap;
-import com.company.log2graphite.utils.AccessMetricParser;
-import java.util.concurrent.ConcurrentHashMap;
+import com.company.log2graphite.core.AccessMetric;
+import com.company.log2graphite.core.AccessMetricHashMap;
+import com.company.log2graphite.core.AccessMetricParser;
+import java.util.HashMap;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -35,7 +35,7 @@ public class AccessMetricHashMapTest {
         assertNotNull(m3);
         h.update(m3);
 
-        ConcurrentHashMap<String , String> metricFormatted = h.get(1402544220L).format();
+        HashMap<String , String> metricFormatted = h.get(1402544220L).format();
 
         assertEquals(7, metricFormatted.size());
         assertEquals(2L, Long.parseLong(metricFormatted.get("requests")));

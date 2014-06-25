@@ -3,7 +3,7 @@ package com.company.log2graphite;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.company.log2graphite.utils.*;
+import com.company.log2graphite.core.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 import java.io.BufferedReader;
@@ -43,7 +43,7 @@ public class Log2GraphiteTest {
 
 
         verify(graphite, times(7)).sent(Mockito.anyLong(), Mockito.anyMapOf(String.class, String.class));
-        Map<String, String> finalMetric = new ConcurrentHashMap<>();
+        Map<String, String> finalMetric = new HashMap<>();
         finalMetric.put("requests", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.002");
@@ -53,7 +53,7 @@ public class Log2GraphiteTest {
         finalMetric.put("204", "2");
         verify(graphite, times(1)).sent(1402544220L, finalMetric);
 
-        finalMetric = new ConcurrentHashMap<>();
+        finalMetric = new HashMap<>();
         finalMetric.put("requests", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.002");
@@ -63,7 +63,7 @@ public class Log2GraphiteTest {
         finalMetric.put("204", "2");
         verify(graphite, times(1)).sent(1402544280L, finalMetric);
 
-        finalMetric = new ConcurrentHashMap<>();
+        finalMetric = new HashMap<>();
         finalMetric.put("requests", "3");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.002");
@@ -73,7 +73,7 @@ public class Log2GraphiteTest {
         finalMetric.put("204", "3");
         verify(graphite, times(1)).sent(1402544340L, finalMetric);
 
-        finalMetric = new ConcurrentHashMap<>();
+        finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.002");
@@ -83,7 +83,7 @@ public class Log2GraphiteTest {
         finalMetric.put("204", "1");
         verify(graphite, times(1)).sent(1402544460L, finalMetric);
 
-        finalMetric = new ConcurrentHashMap<>();
+        finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.002");
@@ -93,7 +93,7 @@ public class Log2GraphiteTest {
         finalMetric.put("204", "1");
         verify(graphite, times(1)).sent(1402544400L, finalMetric);
 
-        finalMetric = new ConcurrentHashMap<>();
+        finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "60.001");
@@ -103,7 +103,7 @@ public class Log2GraphiteTest {
         finalMetric.put("408", "1");
         verify(graphite, times(1)).sent(1402960980L, finalMetric);
 
-        finalMetric = new ConcurrentHashMap<>();
+        finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "252");
         finalMetric.put("request_time", "0.0");
