@@ -3,6 +3,7 @@ package com.company.log2graphite.core;
 import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.*;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -57,10 +58,12 @@ public class Collector {
     }
 
     private void upload(boolean uploadAll) throws InterruptedException {
-        for (Long timestamp : outputMetric.keySet()) {
+        Iterator<Map.Entry<Long, AccessMetric>> iterator = outputMetric.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Long timestamp = iterator.next().getKey();
             if (timestamp <= outputMetric.getLastUploadTime()) {
                 LOG.debug("aggregated metric " + timestamp + " expired");
-                outputMetric.remove(timestamp);
+                iterator.remove();
             } else {
                 LOG.debug("timestamp getLastUploaded getLastUpdated : " + timestamp + " " +
                         outputMetric.get(timestamp).getLastUploaded() + " " + outputMetric.get(timestamp).getLastUpdated());
@@ -80,7 +83,7 @@ public class Collector {
                         }
 
                         outputMetric.get(timestamp).setLastUploaded();
-                        LOG.info("aggregated metric :" + System.getProperty("line.separator") + outputMetric.get(timestamp));
+                        LOG.debug("uploaded " + timestamp + " : " + metricFormatted);
                     } catch (IOException e) {
                         LOG.error(e.getMessage() + " while sending metric to " + receiver.getName());
                         Thread.sleep(500);
@@ -90,7 +93,7 @@ public class Collector {
                         (outputMetric.get(timestamp).getLastUpdated() + metricAggregationTimeout) < outputMetric.getLastUpdateTime()) {
                     LOG.debug("aggregated metric " + timestamp + " expired");
                     outputMetric.setLastUploadTime(timestamp);
-                    outputMetric.remove(timestamp);
+                    iterator.remove();
                 }
             }
         }

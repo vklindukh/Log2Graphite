@@ -73,6 +73,20 @@ public class Args {
                         System.getProperty("line.separator") + "default is 60")
                 .create("atime");
         options.addOption(aggregateMetricTimeout);
+
+        @SuppressWarnings("all")
+        Option awsAccessKey = OptionBuilder.withArgName("AWS access key")
+                .hasArg(true)
+                .withDescription("optional: S3 access key")
+                .create("key");
+        options.addOption(awsAccessKey);
+
+        @SuppressWarnings("all")
+        Option awsSecretKey = OptionBuilder.withArgName("AWS secret key")
+                .hasArg(true)
+                .withDescription("optional: S3 SECRET key")
+                .create("secret");
+        options.addOption(awsSecretKey);
     }
 
     public void readOptions(String[] args) throws ParseException {
@@ -121,4 +135,11 @@ public class Args {
         return Integer.parseInt(s);
     }
 
+    public String getAWSAccessKey() {
+        return cmd.getOptionValue("key");
+    }
+
+    public String getAWSSecretKey() {
+        return cmd.getOptionValue("secret");
+    }
 }

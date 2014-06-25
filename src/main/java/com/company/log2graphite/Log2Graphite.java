@@ -32,7 +32,7 @@ public class Log2Graphite {
             if (cli.getOptionNoTail()) {
                 LOG.info("read '" + cli.getLogPath() + "' and exit");
                 ExecutorService execParser = Executors.newFixedThreadPool(1);
-                execParser.execute(new Reader(cli.getLogPath(), logInputQueue));
+                execParser.execute(new Reader(cli.getLogPath(), cli, logInputQueue));
             } else {
                 LOG.info("tail " + cli.getLogPath());
                 Tail tailer = new Tail(cli.getLogPath(), cli.getOptionFromEnd(), logInputQueue);
@@ -52,10 +52,12 @@ public class Log2Graphite {
                 Collector collector = new Collector(logInputMetric, cli.getAggregateMetricTimeout(), receiver);
                 collector.run();
             } catch (UnknownHostException | InterruptedException m) {
-                LOG.fatal(m);
+                m.printStackTrace();
+                LOG.fatal(m.getMessage());
             }
         } catch (Exception e) {
-            LOG.fatal(e.toString());
+            e.printStackTrace();
+            LOG.fatal(e.getMessage());
             System.exit(255);
         }
         System.exit(0); // kill other threads

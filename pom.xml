@@ -37,9 +37,9 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.powermock</groupId>
-        <artifactId>powermock-api-mockito</artifactId>
-        <version>1.5.5</version>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk</artifactId>
+        <version>1.8.0</version>
     </dependency>
 </dependencies>
     <build>

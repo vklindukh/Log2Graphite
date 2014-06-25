@@ -22,7 +22,8 @@ public class Log2GraphiteTest {
         BlockingQueue<String> logInputQueue = new ArrayBlockingQueue<>(128);
         BlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<>(128);
 
-        Reader reader = new Reader("./src/test/resources/access.log.gz", logInputQueue);
+        Args cli = new Args( new String[]{"-f", "file"});
+        Reader reader = new Reader("./src/test/resources/access.log.gz", cli, logInputQueue);
         reader.run();
 
         assertEquals(12, logInputQueue.size());
@@ -122,7 +123,8 @@ public class Log2GraphiteTest {
         ExecutorService execParser = Executors.newFixedThreadPool(1);
         execParser.execute(new TCPServer(metrics));
 
-        Reader reader = new Reader("./src/test/resources/access.log.gz", logInputQueue);
+        Args cli = new Args( new String[]{"-f", "file"});
+        Reader reader = new Reader("./src/test/resources/access.log.gz", cli, logInputQueue);
         reader.run();
         Props properties = new Props("./src/test/resources/log4j.properties");
         AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
