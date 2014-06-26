@@ -87,5 +87,7 @@ Performance
 Tested on c3.8xlarge AWS instance. Log2Graphite started with 10 Parser threads
 
 10G archived access.log.gz : ~9 minutes
+
 60G raw access.log : ~4 minutes
-S3 : not tested yet
+
+6G S3 archived access.log.gz : ~17 minutes
