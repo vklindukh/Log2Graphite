@@ -2,6 +2,8 @@ package com.company.log2graphite;
 
 import org.apache.commons.cli.*;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Args {
     private Options options = new Options();
@@ -34,6 +36,13 @@ public class Args {
                 .withDescription("optional: parse single file without tail")
                 .create("notail");
         options.addOption(noTail);
+
+        @SuppressWarnings("all")
+        Option hostnameOverride = OptionBuilder.withArgName("hostname")
+                .hasArg(false)
+                .withDescription("optional: override local hostname in metric prefix")
+                .create("l");
+        options.addOption(hostnameOverride);
 
         @SuppressWarnings("all")
         Option tailerEnd = OptionBuilder.withArgName("")
@@ -128,6 +137,21 @@ public class Args {
 
     public String getGraphiteHost() {
         return cmd.getOptionValue("h");
+    }
+
+    public String getHostname() {
+        String hostname = null;
+        if (cmd.getOptionValue("l") != null) {
+            hostname = cmd.getOptionValue("l");
+        } else {
+            try {
+                hostname = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException m) {
+                System.err.println(m.getMessage());
+                System.exit(255);
+            }
+        }
+        return hostname;
     }
 
     public int getGraphitePort() {

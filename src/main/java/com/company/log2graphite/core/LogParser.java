@@ -31,7 +31,8 @@ public class LogParser implements Runnable {
                 currentLine = logInputQueue.take();
                 threadIsActive = process(currentLine);
             } catch (InterruptedException m) {
-                LOG.fatal(m);
+                m.printStackTrace();
+                LOG.fatal(m.getMessage());
                 System.exit(255);
             }
         }

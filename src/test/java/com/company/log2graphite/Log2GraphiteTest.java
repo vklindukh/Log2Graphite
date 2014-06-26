@@ -36,7 +36,7 @@ public class Log2GraphiteTest {
         assertEquals(1, logInputQueue.size());
         assertEquals(9, logInputMetric.size());
 
-        MetricReceiver graphite = Mockito.spy(new Graphite("1.1.1.1", 2003));
+        MetricReceiver graphite = Mockito.spy(new Graphite(cli.getHostname(), "1.1.1.1", 2003));
         doReturn(true).when(graphite).sent(Mockito.anyLong(), Mockito.anyMapOf(String.class, String.class));
 
         Collector collector = new Collector(logInputMetric, 60000, graphite);
@@ -130,7 +130,7 @@ public class Log2GraphiteTest {
         AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
         LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat());
         logParser.run();
-        Collector collector = new Collector(logInputMetric, 60000, new Graphite("127.0.0.1", 2003));
+        Collector collector = new Collector(logInputMetric, 60000, new Graphite(cli.getHostname(), "127.0.0.1", 2003));
         collector.run();
 
         Thread.sleep(1000);

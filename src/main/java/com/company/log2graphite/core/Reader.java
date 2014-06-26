@@ -3,6 +3,7 @@ package com.company.log2graphite.core;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.company.log2graphite.Args;
@@ -52,8 +53,9 @@ public class Reader implements Runnable {
             LOG.info("total read " + linesReceived + " lines in " +  (System.currentTimeMillis() - timeStarted) / 1000 + " seconds");
             logInputQueue.put(AccessMetricParser.LOG_FINISHED);
             reader.close();
-        } catch (IOException | InterruptedException | com.amazonaws.services.s3.model.AmazonS3Exception m) {
-            LOG.fatal(m.getStackTrace());
+        } catch (IOException | InterruptedException | AmazonS3Exception m) {
+            m.printStackTrace();
+            LOG.fatal(m.getMessage());
             System.exit(255);
         }
     }

@@ -48,7 +48,7 @@ public class Log2Graphite {
 
             // run collector
             try {
-                MetricReceiver receiver = new Graphite(cli.getGraphiteHost(), cli.getGraphitePort());
+                MetricReceiver receiver = new Graphite(cli.getHostname(), cli.getGraphiteHost(), cli.getGraphitePort());
                 Collector collector = new Collector(logInputMetric, cli.getAggregateMetricTimeout(), receiver);
                 collector.run();
             } catch (UnknownHostException | InterruptedException m) {

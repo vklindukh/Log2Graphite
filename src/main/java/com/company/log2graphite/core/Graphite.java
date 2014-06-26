@@ -14,21 +14,15 @@ public class Graphite implements MetricReceiver {
     private SocketAddress address;
     private static String graphiteMetricBase;
 
-    public Graphite (String graphiteServer, int graphiteServerPort) {
+    public Graphite(String localHostname, String graphiteServer, int graphiteServerPort) {
         if (graphiteServer != null) {
-            try {
             address = new InetSocketAddress(graphiteServer, graphiteServerPort);
-                String hostname = InetAddress.getLocalHost().getHostName();
-                if (hostname != null) {
-                    graphiteMetricBase = "access." + hostname;
-                } else {
-                    graphiteMetricBase = "access";
-                }
-                LOG.info("upload metric to Graphite server '" + graphiteServer + "'" + " with metric prefix '" + graphiteMetricBase + "'");
-            } catch (UnknownHostException m) {
-                System.err.println(m.getMessage());
-                System.exit(255);
+            if (localHostname == null) {
+                throw new IllegalStateException("cannot get local hostname");
+            } else {
+                graphiteMetricBase = "access." + localHostname;
             }
+            LOG.info("upload metric to Graphite server '" + graphiteServer + "'" + " with metric prefix '" + graphiteMetricBase + "'");
             senderEnabled = true;
         } else {
             LOG.info("do not upload metric to Graphite");

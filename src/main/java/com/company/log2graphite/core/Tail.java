@@ -38,7 +38,8 @@ public class Tail {
             try {
                 logInputQueue.put(line);
             } catch (InterruptedException m) {
-               LOG.fatal(m + " : while adding new line to queue");
+               m.printStackTrace();
+               LOG.fatal(m.getMessage() + " : while adding new line to queue");
                System.exit(255);
             }
         }
