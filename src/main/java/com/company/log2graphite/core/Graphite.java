@@ -20,7 +20,7 @@ public class Graphite implements MetricReceiver {
             if (localHostname == null) {
                 throw new IllegalStateException("cannot get local hostname");
             } else {
-                graphiteMetricBase = "access." + localHostname;
+                graphiteMetricBase = "access." + localHostname + ".";
             }
             LOG.info("upload metric to Graphite server '" + graphiteServer + "'" + " with metric prefix '" + graphiteMetricBase + "'");
             senderEnabled = true;
@@ -41,7 +41,7 @@ public class Graphite implements MetricReceiver {
 
             if (timestamp != 0) {
                 for (String metricName : metricsPair.keySet()) {
-                    outToServer.writeBytes(graphiteMetricBase + "." + metricName + " " +
+                    outToServer.writeBytes(graphiteMetricBase + metricName + " " +
                             metricsPair.get(metricName) + " " + timestamp.toString() +
                             System.getProperty("line.separator"));
                 }

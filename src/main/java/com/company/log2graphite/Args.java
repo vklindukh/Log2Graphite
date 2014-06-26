@@ -39,7 +39,7 @@ public class Args {
 
         @SuppressWarnings("all")
         Option hostnameOverride = OptionBuilder.withArgName("hostname")
-                .hasArg(false)
+                .hasArg(true)
                 .withDescription("optional: override local hostname in metric prefix")
                 .create("l");
         options.addOption(hostnameOverride);

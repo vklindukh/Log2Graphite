@@ -62,7 +62,7 @@ public class Collector {
         while (iterator.hasNext()) {
             Long timestamp = iterator.next().getKey();
             if (timestamp <= outputMetric.getLastUploadTime()) {
-                LOG.debug("aggregated metric " + timestamp + " expired");
+                LOG.debug("aggregated metric " + timestamp + " older then getLastUploadTime " + outputMetric.getLastUploadTime() + ", expired");
                 iterator.remove();
             } else {
                 LOG.debug("timestamp getLastUploaded getLastUpdated : " + timestamp + " " +
@@ -91,7 +91,7 @@ public class Collector {
                 }
                 if ((outputMetric.get(timestamp).getLastUploaded() != 0) &&
                         (outputMetric.get(timestamp).getLastUpdated() + metricAggregationTimeout) < outputMetric.getLastUpdateTime()) {
-                    LOG.debug("aggregated metric " + timestamp + " expired");
+                    LOG.debug("aggregated metric " + timestamp + " older then metricAggregationTimeout " + metricAggregationTimeout + ", expired");
                     outputMetric.setLastUploadTime(timestamp);
                     iterator.remove();
                 }

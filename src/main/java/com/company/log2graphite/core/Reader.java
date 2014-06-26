@@ -53,7 +53,7 @@ public class Reader implements Runnable {
             LOG.info("total read " + linesReceived + " lines in " +  (System.currentTimeMillis() - timeStarted) / 1000 + " seconds");
             logInputQueue.put(AccessMetricParser.LOG_FINISHED);
             reader.close();
-        } catch (IOException | InterruptedException | AmazonS3Exception m) {
+        } catch (IOException | InterruptedException | AmazonS3Exception | IllegalArgumentException m) {
             m.printStackTrace();
             LOG.fatal(m.getMessage());
             System.exit(255);
