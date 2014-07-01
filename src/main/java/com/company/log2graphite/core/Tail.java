@@ -31,6 +31,7 @@ public class Tail {
     public class MyListener extends TailerListenerAdapter {
         @Override
         public void handle(String line) {
+            LOG.debug("tailer got new line : " + line);
             if ((debugPeriod + 10000) < System.currentTimeMillis()) {
                 LOG.debug("current logInputQueue size : " + logInputQueue.size());
                 debugPeriod = System.currentTimeMillis();
