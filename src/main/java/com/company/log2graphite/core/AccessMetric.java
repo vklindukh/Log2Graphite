@@ -1,8 +1,6 @@
 package com.company.log2graphite.core;
-
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class AccessMetric {
     private long timestamp;
@@ -12,10 +10,18 @@ public class AccessMetric {
     private float request_time;
     private float upstream_time;
     private HttpMethod methods = new HttpMethod();
-    private adType types = new adType();
+    private AdType types = new AdType();
     private ResponseCode codes = new ResponseCode();
+    private MetricRange<Integer> requestTimeRange;
+    private static int percentRequestTimeMax;
     private long lastUpdated;
     private long lastUploaded;
+
+    public AccessMetric () { }
+
+    public AccessMetric (int p) {
+        percentRequestTimeMax = p;
+    }
 
     public synchronized boolean update(AccessMetric n) {
         this.requests += n.requests;
@@ -57,7 +63,15 @@ public class AccessMetric {
             metricFormatted.put(Integer.toString(key), Long.toString(codes.get(key)));
         }
 
+        if (percentRequestTimeMax != 0) {
+            calcRange(metricFormatted);
+        }
         return metricFormatted;
+    }
+
+    private void calcRange(HashMap<String, String> metricFormatted) {
+        metricFormatted.put(percentRequestTimeMax +"requests",
+                String.valueOf(requestTimeRange.maxMetric(percentRequestTimeMax)));
     }
 
     public String toString() {
@@ -106,7 +120,7 @@ public class AccessMetric {
         return methods;
     }
 
-    public adType getTypes() {
+    public AdType getTypes() {
         return types;
     }
 
@@ -147,7 +161,7 @@ public class AccessMetric {
         }
     }
 
-    class adType extends HashMapUpdater<String> {
+    class AdType extends HashMapUpdater<String> {
         public void insert(String s) throws ParseException {
             try {
                 String key = "type_unknown";
@@ -185,6 +199,19 @@ public class AccessMetric {
                     put(key, get(key) + n.get(key));
                 } else
                     put(key, n.get(key));
+            }
+        }
+    }
+
+    private class MetricRange<E extends Comparable> extends ArrayList<E> {
+
+        E maxMetric(int percent) {
+            if (size() > 99) {
+                List<E> unsortList = this;
+                Collections.sort(unsortList);
+                return get(size() -1 - percent);
+            } else {
+                throw new IllegalStateException("too many metrics to calculate");
             }
         }
     }

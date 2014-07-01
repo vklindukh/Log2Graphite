@@ -43,13 +43,13 @@ public class Log2Graphite {
             AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
             ExecutorService execParser = Executors.newFixedThreadPool(cli.getParserNumThreads());
             for (int i = 0; i < cli.getParserNumThreads(); i++) {
-                execParser.execute(new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat()));
+                execParser.execute(new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat(), cli.getRequestTimePercent()));
             }
 
             // run collector
             try {
                 MetricReceiver receiver = new Graphite(cli.getHostname(), cli.getGraphiteHost(), cli.getGraphitePort());
-                Collector collector = new Collector(logInputMetric, cli.getAggregateMetricTimeout(), receiver);
+                Collector collector = new Collector(logInputMetric, cli.getAggregateMetricTimeout(), cli.getRequestTimePercent(), receiver);
                 collector.run();
             } catch (UnknownHostException | InterruptedException m) {
                 m.printStackTrace();

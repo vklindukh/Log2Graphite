@@ -96,6 +96,13 @@ public class Args {
                 .withDescription("optional: S3 secret key")
                 .create("secret");
         options.addOption(awsSecretKey);
+
+        @SuppressWarnings("all")
+        Option maxRequestTimePercent = OptionBuilder.withArgName("percent")
+                .hasArg(true)
+                .withDescription("optional: calculate max request_time for given percent of records")
+                .create("maxtime");
+        options.addOption(maxRequestTimePercent);
     }
 
     public void readOptions(String[] args) throws ParseException {
@@ -157,6 +164,17 @@ public class Args {
     public int getGraphitePort() {
         String s = (cmd.getOptionValue("p") == null) ? "2003" : cmd.getOptionValue("p");
         return Integer.parseInt(s);
+    }
+
+    public int getRequestTimePercent() {
+        int timePercent = 0;
+        if (cmd.getOptionValue("maxtime") != null) {
+            timePercent = Integer.valueOf(cmd.getOptionValue("maxtime"));
+            if ((timePercent < 1) || (timePercent > 99)) {
+                throw new IllegalStateException("wrong 'max request_time percent' value. Must be between 0-100%");
+            }
+        }
+        return timePercent;
     }
 
     public String getAWSAccessKey() {

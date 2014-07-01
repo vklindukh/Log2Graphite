@@ -14,14 +14,16 @@ public class Collector {
     private BlockingQueue<AccessMetric> logInputMetric;
     private AccessMetricHashMap outputMetric;
     private static MetricReceiver receiver;
+    private static int timePercent;
 
     private static int metricAggregationTimeout;
     private static final int UPLOAD_PERIOD = 10000;
     private static final int INPUT_METRIC_TIMEOUT = 3;
     private static final int INPUT_METRIC_TIMEOUT_NOTIFY = 60000;
 
-    public Collector (BlockingQueue<AccessMetric> logInputMetric, int metricAggregationTimeout, MetricReceiver receiver) throws UnknownHostException {
+    public Collector (BlockingQueue<AccessMetric> logInputMetric, int metricAggregationTimeout, int timePercent, MetricReceiver receiver) throws UnknownHostException {
         this.logInputMetric = logInputMetric;
+        this.timePercent = timePercent;
         Collector.receiver = receiver;
         Collector.metricAggregationTimeout = metricAggregationTimeout;
         outputMetric = new AccessMetricHashMap();

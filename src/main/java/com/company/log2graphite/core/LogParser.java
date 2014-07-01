@@ -15,10 +15,13 @@ public class LogParser implements Runnable {
     private long aggregatedMetricTimestamp;
     private long queueUpdateLastTime;
 
-    public LogParser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
+    public LogParser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat, int percentRequestTimeMax) throws ParseException {
         logInputQueue = q;
         logInputMetric = m;
         metricParser = new AccessMetricParser(logFormat);
+        if (percentRequestTimeMax > 0) {
+            new AccessMetric(percentRequestTimeMax);
+        }
     }
 
     public void run() {

@@ -30,7 +30,7 @@ public class Log2GraphiteTest {
 
         Props properties = new Props("./src/test/resources/log4j.properties");
         AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
-        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat());
+        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat(), 0);
         logParser.run();
 
         assertEquals(1, logInputQueue.size());
@@ -39,7 +39,7 @@ public class Log2GraphiteTest {
         MetricReceiver graphite = Mockito.spy(new Graphite(cli.getHostname(), "1.1.1.1", 2003));
         doReturn(true).when(graphite).sent(Mockito.anyLong(), Mockito.anyMapOf(String.class, String.class));
 
-        Collector collector = new Collector(logInputMetric, 60000, graphite);
+        Collector collector = new Collector(logInputMetric, 60000, 0, graphite);
         collector.run();
 
 
@@ -128,9 +128,9 @@ public class Log2GraphiteTest {
         reader.run();
         Props properties = new Props("./src/test/resources/log4j.properties");
         AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
-        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat());
+        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat(), 0);
         logParser.run();
-        Collector collector = new Collector(logInputMetric, 60000, new Graphite(cli.getHostname(), "127.0.0.1", 2003));
+        Collector collector = new Collector(logInputMetric, 60000, 0, new Graphite(cli.getHostname(), "127.0.0.1", 2003));
         collector.run();
 
         Thread.sleep(1000);
