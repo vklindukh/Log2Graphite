@@ -42,11 +42,15 @@ public class ParserTest {
             if (metric.getTimestamp() == 0) {
                 assertEquals(0, metricFormatted.size());
             } else {
-                assertEquals(7, metricFormatted.size());
+                assertEquals(11, metricFormatted.size());
                 assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
                 assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
                 assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
+                assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);
+                assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time_max")), 0.0001);
                 assertEquals(0.002, Double.parseDouble(metricFormatted.get("upstream_time")), 0.0001);
+                assertEquals(0.002, Double.parseDouble(metricFormatted.get("upstream_time_min")), 0.0001);
+                assertEquals(0.002, Double.parseDouble(metricFormatted.get("upstream_time_max")), 0.0001);
                 assertEquals(1L, Long.parseLong(metricFormatted.get("POST")));
                 assertEquals(1L, Long.parseLong(metricFormatted.get("ad")));
                 assertEquals(1L, Long.parseLong(metricFormatted.get("204")));

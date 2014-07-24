@@ -9,8 +9,8 @@ public class AccessMetric {
     private short min;
     private long requests;
     private long size;
-    private float request_time;
-    private float upstream_time;
+    private FloatMetric request_time = new FloatMetric();
+    private FloatMetric upstream_time = new FloatMetric();
     private HttpMethod methods = new HttpMethod();
     private adType types = new adType();
     private ResponseCode codes = new ResponseCode();
@@ -20,8 +20,8 @@ public class AccessMetric {
     public synchronized boolean update(AccessMetric n) {
         this.requests += n.requests;
         this.size += n.size;
-        this.request_time += n.request_time;
-        this.upstream_time += n.upstream_time;
+        this.request_time.update(n.request_time);
+        this.upstream_time.update(n.upstream_time);
         this.methods.update(n.methods);
         this.types.update(n.types);
         this.codes.update(n.codes);
@@ -44,8 +44,12 @@ public class AccessMetric {
 
         metricFormatted.put("requests", Long.toString(requests));
         metricFormatted.put("size", Long.toString(size / requests));
-        metricFormatted.put("request_time", Float.toString(request_time / requests));
-        metricFormatted.put("upstream_time", Float.toString(upstream_time / requests));
+        metricFormatted.put("request_time", Float.toString(request_time.getSum() / requests));
+        metricFormatted.put("request_time_min", Float.toString(request_time.getMin()));
+        metricFormatted.put("request_time_max", Float.toString(request_time.getMax()));
+        metricFormatted.put("upstream_time", Float.toString(upstream_time.getSum() / requests));
+        metricFormatted.put("upstream_time_min", Float.toString(upstream_time.getMin()));
+        metricFormatted.put("upstream_time_max", Float.toString(upstream_time.getMax()));
 
         for (String key : methods.keySet()) {
             metricFormatted.put(key, Long.toString(methods.get(key)));
@@ -66,8 +70,12 @@ public class AccessMetric {
         s += "  min : " + Short.toString(min) + System.getProperty("line.separator");
         s += "  requests : " + Long.toString(requests) + System.getProperty("line.separator");
         s += "  size : "  + Long.toString(size) + System.getProperty("line.separator");
-        s += "  request_time : "  + Float.toString(request_time) + System.getProperty("line.separator");
-        s += "  upstream_time : "  + Float.toString(upstream_time) + System.getProperty("line.separator");
+        s += "  request_time : "  + Float.toString(request_time.getSum()) + System.getProperty("line.separator");
+        s += "  request_time_min : "  + Float.toString(request_time.getMin()) + System.getProperty("line.separator");
+        s += "  request_time_max : "  + Float.toString(request_time.getMax()) + System.getProperty("line.separator");
+        s += "  upstream_time : "  + Float.toString(upstream_time.getSum()) + System.getProperty("line.separator");
+        s += "  upstream_time_min : "  + Float.toString(upstream_time.getMin()) + System.getProperty("line.separator");
+        s += "  upstream_time_max : "  + Float.toString(upstream_time.getMax()) + System.getProperty("line.separator");
         s += "  methods : " + methods.toString() + System.getProperty("line.separator");
         s += "  types : " + types.toString() + System.getProperty("line.separator");
         s += "  codes : " + codes.toString() + System.getProperty("line.separator");
@@ -95,11 +103,11 @@ public class AccessMetric {
     }
 
     public void setRequest_time(float request_time) {
-        this.request_time = request_time;
+        this.request_time.set(request_time);
     }
 
     public void setUpstream_time(float upstream_time) {
-        this.upstream_time = upstream_time;
+        this.upstream_time.set(upstream_time);
     }
 
     public HttpMethod getMethods() {
@@ -188,4 +196,42 @@ public class AccessMetric {
             }
         }
     }
+
+    class FloatMetric {
+        private long counter;
+        private float min;
+        private float sum;
+        private float max;
+
+        void set(float metric) {
+            sum = metric;
+            min = metric;
+            max = metric;
+            counter = 1;
+        }
+
+        void update(FloatMetric n) {
+            this.sum += n.sum;
+            if (n.max > this.max) {
+                this.max = n.max;
+            }
+            if (counter == 0 || (n.min < this.min)) {
+                this.min = n.min;
+            }
+            counter++;
+        }
+
+        float getSum() {
+            return sum;
+        }
+
+        float getMin() {
+            return min;
+        }
+
+        float getMax() {
+            return max;
+        }
+    }
+
 }
