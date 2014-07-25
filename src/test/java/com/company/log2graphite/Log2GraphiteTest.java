@@ -44,14 +44,17 @@ public class Log2GraphiteTest {
 
         verify(graphite, times(7)).sent(Mockito.anyLong(), Mockito.anyMapOf(String.class, String.class));
         Map<String, String> finalMetric = new HashMap<>();
+
         finalMetric.put("requests", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.002");
         finalMetric.put("request_time_min", "0.002");
         finalMetric.put("request_time_max", "0.002");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.002");
         finalMetric.put("upstream_time_min", "0.002");
         finalMetric.put("upstream_time_max", "0.002");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("POST", "2");
         finalMetric.put("ad", "2");
         finalMetric.put("204", "2");
@@ -63,9 +66,11 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time", "0.002");
         finalMetric.put("request_time_min", "0.002");
         finalMetric.put("request_time_max", "0.002");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.002");
         finalMetric.put("upstream_time_min", "0.002");
         finalMetric.put("upstream_time_max", "0.002");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("POST", "2");
         finalMetric.put("ad", "2");
         finalMetric.put("204", "2");
@@ -77,9 +82,11 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time", "0.002");
         finalMetric.put("request_time_min", "0.002");
         finalMetric.put("request_time_max", "0.002");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.002");
         finalMetric.put("upstream_time_min", "0.002");
         finalMetric.put("upstream_time_max", "0.002");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("POST", "3");
         finalMetric.put("ad", "3");
         finalMetric.put("204", "3");
@@ -91,9 +98,11 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time", "0.002");
         finalMetric.put("request_time_min", "0.002");
         finalMetric.put("request_time_max", "0.002");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.002");
         finalMetric.put("upstream_time_min", "0.002");
         finalMetric.put("upstream_time_max", "0.002");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("POST", "1");
         finalMetric.put("ad", "1");
         finalMetric.put("204", "1");
@@ -105,9 +114,11 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time", "0.002");
         finalMetric.put("request_time_min", "0.002");
         finalMetric.put("request_time_max", "0.002");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.002");
         finalMetric.put("upstream_time_min", "0.002");
         finalMetric.put("upstream_time_max", "0.002");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("POST", "1");
         finalMetric.put("ad", "1");
         finalMetric.put("204", "1");
@@ -119,9 +130,11 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time", "60.001");
         finalMetric.put("request_time_min", "60.001");
         finalMetric.put("request_time_max", "60.001");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.0");
         finalMetric.put("upstream_time_min", "0.0");
         finalMetric.put("upstream_time_max", "0.0");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("OTHER_METHOD", "1");
         finalMetric.put("type_unknown", "1");
         finalMetric.put("408", "1");
@@ -133,9 +146,11 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time", "0.0");
         finalMetric.put("request_time_min", "0.0");
         finalMetric.put("request_time_max", "0.0");
+        finalMetric.put("request_time_stdev", "0.0");
         finalMetric.put("upstream_time", "0.0");
         finalMetric.put("upstream_time_min", "0.0");
         finalMetric.put("upstream_time_max", "0.0");
+        finalMetric.put("upstream_time_stdev", "0.0");
         finalMetric.put("GET", "1");
         finalMetric.put("type_unknown", "1");
         finalMetric.put("400", "1");
@@ -162,7 +177,7 @@ public class Log2GraphiteTest {
 
         Thread.sleep(1000);
 
-        assertEquals(77, metrics.size());
+        assertEquals(91, metrics.size());
 
         String metricBase = "access." + InetAddress.getLocalHost().getHostName() + ".";
         HashSet<String> expectedMetricSet = new HashSet<>(Arrays.asList(
@@ -206,6 +221,13 @@ public class Log2GraphiteTest {
                 metricBase + "request_time_max 0.002 1402544400",
                 metricBase + "request_time_max 0.002 1402544460",
                 metricBase + "request_time_max 60.001 1402960980",
+                metricBase + "request_time_stdev 0.0 1402888500",
+                metricBase + "request_time_stdev 0.0 1402544220",
+                metricBase + "request_time_stdev 0.0 1402544280",
+                metricBase + "request_time_stdev 0.0 1402544340",
+                metricBase + "request_time_stdev 0.0 1402544400",
+                metricBase + "request_time_stdev 0.0 1402544460",
+                metricBase + "request_time_stdev 0.0 1402960980",
                 metricBase + "requests 1 1402544400",
                 metricBase + "requests 1 1402544460",
                 metricBase + "requests 1 1402888500",
@@ -242,7 +264,14 @@ public class Log2GraphiteTest {
                 metricBase + "upstream_time_max 0.002 1402544280",
                 metricBase + "upstream_time_max 0.002 1402544340",
                 metricBase + "upstream_time_max 0.002 1402544400",
-                metricBase + "upstream_time_max 0.002 1402544460"));
+                metricBase + "upstream_time_max 0.002 1402544460",
+                metricBase + "upstream_time_stdev 0.0 1402888500",
+                metricBase + "upstream_time_stdev 0.0 1402960980",
+                metricBase + "upstream_time_stdev 0.0 1402544220",
+                metricBase + "upstream_time_stdev 0.0 1402544280",
+                metricBase + "upstream_time_stdev 0.0 1402544340",
+                metricBase + "upstream_time_stdev 0.0 1402544400",
+                metricBase + "upstream_time_stdev 0.0 1402544460"));
 
         HashSet<String> metricSet = new HashSet<>(new ArrayList<>(metrics));
 

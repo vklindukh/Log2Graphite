@@ -85,15 +85,17 @@ public class AccessMetricParserTest {
 
         HashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(11, metricFormatted.size());
+        assertEquals(13, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_max")), 0.0001);
+        assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_stdev")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time_min")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time_max")), 0.0001);
+        assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time_stdev")), 0.0001);
         assertEquals(1L, Long.parseLong(metricFormatted.get("POST")));
         assertEquals(1L, Long.parseLong(metricFormatted.get("ad")));
         assertEquals(1L, Long.parseLong(metricFormatted.get("204")));
@@ -124,15 +126,17 @@ public class AccessMetricParserTest {
 
         HashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(9, metricFormatted.size());
+        assertEquals(11, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_max")), 0.0001);
+        assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_stdev")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time_min")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time_max")), 0.0001);
+        assertEquals(0, Double.parseDouble(metricFormatted.get("upstream_time_stdev")), 0.0001);
         assertEquals(1L, Long.parseLong(metricFormatted.get("204")));
     }
 }

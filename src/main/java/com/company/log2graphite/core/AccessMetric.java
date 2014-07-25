@@ -1,6 +1,7 @@
 package com.company.log2graphite.core;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -47,9 +48,11 @@ public class AccessMetric {
         metricFormatted.put("request_time", Float.toString(request_time.getSum() / requests));
         metricFormatted.put("request_time_min", Float.toString(request_time.getMin()));
         metricFormatted.put("request_time_max", Float.toString(request_time.getMax()));
+        metricFormatted.put("request_time_stdev", Float.toString(request_time.getStDev()));
         metricFormatted.put("upstream_time", Float.toString(upstream_time.getSum() / requests));
         metricFormatted.put("upstream_time_min", Float.toString(upstream_time.getMin()));
         metricFormatted.put("upstream_time_max", Float.toString(upstream_time.getMax()));
+        metricFormatted.put("upstream_time_stdev", Float.toString(upstream_time.getStDev()));
 
         for (String key : methods.keySet()) {
             metricFormatted.put(key, Long.toString(methods.get(key)));
@@ -73,9 +76,11 @@ public class AccessMetric {
         s += "  request_time : "  + Float.toString(request_time.getSum()) + System.getProperty("line.separator");
         s += "  request_time_min : "  + Float.toString(request_time.getMin()) + System.getProperty("line.separator");
         s += "  request_time_max : "  + Float.toString(request_time.getMax()) + System.getProperty("line.separator");
+        s += "  request_time_stdev : "  + Float.toString(request_time.getStDev()) + System.getProperty("line.separator");
         s += "  upstream_time : "  + Float.toString(upstream_time.getSum()) + System.getProperty("line.separator");
         s += "  upstream_time_min : "  + Float.toString(upstream_time.getMin()) + System.getProperty("line.separator");
         s += "  upstream_time_max : "  + Float.toString(upstream_time.getMax()) + System.getProperty("line.separator");
+        s += "  upstream_time_stdev : "  + Float.toString(upstream_time.getStDev()) + System.getProperty("line.separator");
         s += "  methods : " + methods.toString() + System.getProperty("line.separator");
         s += "  types : " + types.toString() + System.getProperty("line.separator");
         s += "  codes : " + codes.toString() + System.getProperty("line.separator");
@@ -199,6 +204,7 @@ public class AccessMetric {
 
     class FloatMetric {
         private long counter;
+        private ArrayList<Float> metrics = new ArrayList<>();
         private float min;
         private float sum;
         private float max;
@@ -207,6 +213,8 @@ public class AccessMetric {
             sum = metric;
             min = metric;
             max = metric;
+            metrics = new ArrayList<>();
+            metrics.add(metric);
             counter = 1;
         }
 
@@ -218,6 +226,7 @@ public class AccessMetric {
             if (counter == 0 || (n.min < this.min)) {
                 this.min = n.min;
             }
+            metrics.addAll(n.metrics);
             counter++;
         }
 
@@ -232,6 +241,22 @@ public class AccessMetric {
         float getMax() {
             return max;
         }
+
+        float getAverage() {
+            return sum / counter;
+        }
+
+        float getStDev() {
+            if (counter == 0) {
+                return 0;
+            }
+            float average = getAverage();
+            double metricsSum = 0;
+            for (float m : metrics) {
+                metricsSum += Math.pow(average - m, 2);
+            }
+            return (float) Math.sqrt(metricsSum / counter);
+        }
     }
 
-}
+ }
