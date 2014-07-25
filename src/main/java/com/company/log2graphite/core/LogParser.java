@@ -29,7 +29,7 @@ public class LogParser implements Runnable {
         while (threadIsActive) {
             try {
                 currentLine = logInputQueue.take();
-                LOG.debug("got from logInputQueue : " + currentLine);
+                // LOG.debug("got from logInputQueue : " + currentLine);
                 threadIsActive = process(currentLine);
             } catch (InterruptedException m) {
                 m.printStackTrace();
@@ -43,7 +43,7 @@ public class LogParser implements Runnable {
     private boolean process(String s) {
         try {
             AccessMetric currentMetric = metricParser.parse(s);
-            LOG.debug("parsed " + currentMetric);
+            //LOG.debug("parsed " + currentMetric);
             long currentMetricTimestamp = currentMetric.getTimestamp();
 
             if (aggregatedMetricTimestamp == 0) {

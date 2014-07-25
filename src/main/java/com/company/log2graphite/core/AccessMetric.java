@@ -45,14 +45,14 @@ public class AccessMetric {
 
         metricFormatted.put("requests", Long.toString(requests));
         metricFormatted.put("size", Long.toString(size / requests));
-        metricFormatted.put("request_time", Float.toString(request_time.getSum() / requests));
-        metricFormatted.put("request_time_min", Float.toString(request_time.getMin()));
-        metricFormatted.put("request_time_max", Float.toString(request_time.getMax()));
-        metricFormatted.put("request_time_stdev", Float.toString(request_time.getStDev()));
-        metricFormatted.put("upstream_time", Float.toString(upstream_time.getSum() / requests));
-        metricFormatted.put("upstream_time_min", Float.toString(upstream_time.getMin()));
-        metricFormatted.put("upstream_time_max", Float.toString(upstream_time.getMax()));
-        metricFormatted.put("upstream_time_stdev", Float.toString(upstream_time.getStDev()));
+        metricFormatted.put("request_time", String.format("%.4f",request_time.getSum() / requests));
+        metricFormatted.put("request_time_min", String.format("%.4f",request_time.getMin()));
+        metricFormatted.put("request_time_max", String.format("%.4f",request_time.getMax()));
+        metricFormatted.put("request_time_stdev", String.format("%.4f", request_time.getStDev()));
+        metricFormatted.put("upstream_time", String.format("%.4f",upstream_time.getSum() / requests));
+        metricFormatted.put("upstream_time_min", String.format("%.4f",upstream_time.getMin()));
+        metricFormatted.put("upstream_time_max", String.format("%.4f",upstream_time.getMax()));
+        metricFormatted.put("upstream_time_stdev", String.format("%.4f",upstream_time.getStDev()));
 
         for (String key : methods.keySet()) {
             metricFormatted.put(key, Long.toString(methods.get(key)));
@@ -227,7 +227,7 @@ public class AccessMetric {
                 this.min = n.min;
             }
             metrics.addAll(n.metrics);
-            counter++;
+            counter += n.counter;
         }
 
         float getSum() {
@@ -247,14 +247,20 @@ public class AccessMetric {
         }
 
         float getStDev() {
+            float localMax = 0;
             if (counter == 0) {
                 return 0;
             }
             float average = getAverage();
             double metricsSum = 0;
             for (float m : metrics) {
+                if (m > localMax) {
+                    localMax = m;
+                }
                 metricsSum += Math.pow(average - m, 2);
             }
+            System.out.println("counter : " + counter + ", real size : " + metrics.size());
+            System.out.println("min : " + min + "; average : " + average + "; max : " + max + "; localMax : " + localMax + "; stdev : " + Math.sqrt(metricsSum / counter));
             return (float) Math.sqrt(metricsSum / counter);
         }
     }

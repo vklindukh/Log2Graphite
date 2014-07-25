@@ -47,14 +47,14 @@ public class Log2GraphiteTest {
 
         finalMetric.put("requests", "2");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "0.002");
-        finalMetric.put("request_time_min", "0.002");
-        finalMetric.put("request_time_max", "0.002");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.002");
-        finalMetric.put("upstream_time_min", "0.002");
-        finalMetric.put("upstream_time_max", "0.002");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "0.0020");
+        finalMetric.put("request_time_min", "0.0020");
+        finalMetric.put("request_time_max", "0.0020");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0020");
+        finalMetric.put("upstream_time_min", "0.0020");
+        finalMetric.put("upstream_time_max", "0.0020");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("POST", "2");
         finalMetric.put("ad", "2");
         finalMetric.put("204", "2");
@@ -63,14 +63,14 @@ public class Log2GraphiteTest {
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "2");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "0.002");
-        finalMetric.put("request_time_min", "0.002");
-        finalMetric.put("request_time_max", "0.002");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.002");
-        finalMetric.put("upstream_time_min", "0.002");
-        finalMetric.put("upstream_time_max", "0.002");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "0.0020");
+        finalMetric.put("request_time_min", "0.0020");
+        finalMetric.put("request_time_max", "0.0020");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0020");
+        finalMetric.put("upstream_time_min", "0.0020");
+        finalMetric.put("upstream_time_max", "0.0020");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("POST", "2");
         finalMetric.put("ad", "2");
         finalMetric.put("204", "2");
@@ -79,14 +79,14 @@ public class Log2GraphiteTest {
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "3");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "0.002");
-        finalMetric.put("request_time_min", "0.002");
-        finalMetric.put("request_time_max", "0.002");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.002");
-        finalMetric.put("upstream_time_min", "0.002");
-        finalMetric.put("upstream_time_max", "0.002");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "0.0020");
+        finalMetric.put("request_time_min", "0.0020");
+        finalMetric.put("request_time_max", "0.0020");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0020");
+        finalMetric.put("upstream_time_min", "0.0020");
+        finalMetric.put("upstream_time_max", "0.0020");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("POST", "3");
         finalMetric.put("ad", "3");
         finalMetric.put("204", "3");
@@ -95,14 +95,14 @@ public class Log2GraphiteTest {
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "0.002");
-        finalMetric.put("request_time_min", "0.002");
-        finalMetric.put("request_time_max", "0.002");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.002");
-        finalMetric.put("upstream_time_min", "0.002");
-        finalMetric.put("upstream_time_max", "0.002");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "0.0020");
+        finalMetric.put("request_time_min", "0.0020");
+        finalMetric.put("request_time_max", "0.0020");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0020");
+        finalMetric.put("upstream_time_min", "0.0020");
+        finalMetric.put("upstream_time_max", "0.0020");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("POST", "1");
         finalMetric.put("ad", "1");
         finalMetric.put("204", "1");
@@ -111,14 +111,14 @@ public class Log2GraphiteTest {
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "0.002");
-        finalMetric.put("request_time_min", "0.002");
-        finalMetric.put("request_time_max", "0.002");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.002");
-        finalMetric.put("upstream_time_min", "0.002");
-        finalMetric.put("upstream_time_max", "0.002");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "0.0020");
+        finalMetric.put("request_time_min", "0.0020");
+        finalMetric.put("request_time_max", "0.0020");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0020");
+        finalMetric.put("upstream_time_min", "0.0020");
+        finalMetric.put("upstream_time_max", "0.0020");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("POST", "1");
         finalMetric.put("ad", "1");
         finalMetric.put("204", "1");
@@ -127,14 +127,14 @@ public class Log2GraphiteTest {
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "60.001");
-        finalMetric.put("request_time_min", "60.001");
-        finalMetric.put("request_time_max", "60.001");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.0");
-        finalMetric.put("upstream_time_min", "0.0");
-        finalMetric.put("upstream_time_max", "0.0");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "60.0010");
+        finalMetric.put("request_time_min", "60.0010");
+        finalMetric.put("request_time_max", "60.0010");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0000");
+        finalMetric.put("upstream_time_min", "0.0000");
+        finalMetric.put("upstream_time_max", "0.0000");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("OTHER_METHOD", "1");
         finalMetric.put("type_unknown", "1");
         finalMetric.put("408", "1");
@@ -143,14 +143,14 @@ public class Log2GraphiteTest {
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
         finalMetric.put("size", "252");
-        finalMetric.put("request_time", "0.0");
-        finalMetric.put("request_time_min", "0.0");
-        finalMetric.put("request_time_max", "0.0");
-        finalMetric.put("request_time_stdev", "0.0");
-        finalMetric.put("upstream_time", "0.0");
-        finalMetric.put("upstream_time_min", "0.0");
-        finalMetric.put("upstream_time_max", "0.0");
-        finalMetric.put("upstream_time_stdev", "0.0");
+        finalMetric.put("request_time", "0.0000");
+        finalMetric.put("request_time_min", "0.0000");
+        finalMetric.put("request_time_max", "0.0000");
+        finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("upstream_time", "0.0000");
+        finalMetric.put("upstream_time_min", "0.0000");
+        finalMetric.put("upstream_time_max", "0.0000");
+        finalMetric.put("upstream_time_stdev", "0.0000");
         finalMetric.put("GET", "1");
         finalMetric.put("type_unknown", "1");
         finalMetric.put("400", "1");
@@ -200,34 +200,34 @@ public class Log2GraphiteTest {
                 metricBase + "ad 2 1402544220",
                 metricBase + "ad 2 1402544280",
                 metricBase + "ad 3 1402544340",
-                metricBase + "request_time 0.0 1402888500",
-                metricBase + "request_time 0.002 1402544220",
-                metricBase + "request_time 0.002 1402544280",
-                metricBase + "request_time 0.002 1402544340",
-                metricBase + "request_time 0.002 1402544400",
-                metricBase + "request_time 0.002 1402544460",
-                metricBase + "request_time 60.001 1402960980",
-                metricBase + "request_time_min 0.0 1402888500",
-                metricBase + "request_time_min 0.002 1402544220",
-                metricBase + "request_time_min 0.002 1402544280",
-                metricBase + "request_time_min 0.002 1402544340",
-                metricBase + "request_time_min 0.002 1402544400",
-                metricBase + "request_time_min 0.002 1402544460",
-                metricBase + "request_time_min 60.001 1402960980",
-                metricBase + "request_time_max 0.0 1402888500",
-                metricBase + "request_time_max 0.002 1402544220",
-                metricBase + "request_time_max 0.002 1402544280",
-                metricBase + "request_time_max 0.002 1402544340",
-                metricBase + "request_time_max 0.002 1402544400",
-                metricBase + "request_time_max 0.002 1402544460",
-                metricBase + "request_time_max 60.001 1402960980",
-                metricBase + "request_time_stdev 0.0 1402888500",
-                metricBase + "request_time_stdev 0.0 1402544220",
-                metricBase + "request_time_stdev 0.0 1402544280",
-                metricBase + "request_time_stdev 0.0 1402544340",
-                metricBase + "request_time_stdev 0.0 1402544400",
-                metricBase + "request_time_stdev 0.0 1402544460",
-                metricBase + "request_time_stdev 0.0 1402960980",
+                metricBase + "request_time 0.0000 1402888500",
+                metricBase + "request_time 0.0020 1402544220",
+                metricBase + "request_time 0.0020 1402544280",
+                metricBase + "request_time 0.0020 1402544340",
+                metricBase + "request_time 0.0020 1402544400",
+                metricBase + "request_time 0.0020 1402544460",
+                metricBase + "request_time 60.0010 1402960980",
+                metricBase + "request_time_min 0.0000 1402888500",
+                metricBase + "request_time_min 0.0020 1402544220",
+                metricBase + "request_time_min 0.0020 1402544280",
+                metricBase + "request_time_min 0.0020 1402544340",
+                metricBase + "request_time_min 0.0020 1402544400",
+                metricBase + "request_time_min 0.0020 1402544460",
+                metricBase + "request_time_min 60.0010 1402960980",
+                metricBase + "request_time_max 0.0000 1402888500",
+                metricBase + "request_time_max 0.0020 1402544220",
+                metricBase + "request_time_max 0.0020 1402544280",
+                metricBase + "request_time_max 0.0020 1402544340",
+                metricBase + "request_time_max 0.0020 1402544400",
+                metricBase + "request_time_max 0.0020 1402544460",
+                metricBase + "request_time_max 60.0010 1402960980",
+                metricBase + "request_time_stdev 0.0000 1402888500",
+                metricBase + "request_time_stdev 0.0000 1402544220",
+                metricBase + "request_time_stdev 0.0000 1402544280",
+                metricBase + "request_time_stdev 0.0000 1402544340",
+                metricBase + "request_time_stdev 0.0000 1402544400",
+                metricBase + "request_time_stdev 0.0000 1402544460",
+                metricBase + "request_time_stdev 0.0000 1402960980",
                 metricBase + "requests 1 1402544400",
                 metricBase + "requests 1 1402544460",
                 metricBase + "requests 1 1402888500",
@@ -244,34 +244,34 @@ public class Log2GraphiteTest {
                 metricBase + "size 252 1402888500",
                 metricBase + "type_unknown 1 1402888500",
                 metricBase + "type_unknown 1 1402960980",
-                metricBase + "upstream_time 0.0 1402888500",
-                metricBase + "upstream_time 0.0 1402960980",
-                metricBase + "upstream_time 0.002 1402544220",
-                metricBase + "upstream_time 0.002 1402544280",
-                metricBase + "upstream_time 0.002 1402544340",
-                metricBase + "upstream_time 0.002 1402544400",
-                metricBase + "upstream_time 0.002 1402544460",
-                metricBase + "upstream_time_min 0.0 1402888500",
-                metricBase + "upstream_time_min 0.0 1402960980",
-                metricBase + "upstream_time_min 0.002 1402544220",
-                metricBase + "upstream_time_min 0.002 1402544280",
-                metricBase + "upstream_time_min 0.002 1402544340",
-                metricBase + "upstream_time_min 0.002 1402544400",
-                metricBase + "upstream_time_min 0.002 1402544460",
-                metricBase + "upstream_time_max 0.0 1402888500",
-                metricBase + "upstream_time_max 0.0 1402960980",
-                metricBase + "upstream_time_max 0.002 1402544220",
-                metricBase + "upstream_time_max 0.002 1402544280",
-                metricBase + "upstream_time_max 0.002 1402544340",
-                metricBase + "upstream_time_max 0.002 1402544400",
-                metricBase + "upstream_time_max 0.002 1402544460",
-                metricBase + "upstream_time_stdev 0.0 1402888500",
-                metricBase + "upstream_time_stdev 0.0 1402960980",
-                metricBase + "upstream_time_stdev 0.0 1402544220",
-                metricBase + "upstream_time_stdev 0.0 1402544280",
-                metricBase + "upstream_time_stdev 0.0 1402544340",
-                metricBase + "upstream_time_stdev 0.0 1402544400",
-                metricBase + "upstream_time_stdev 0.0 1402544460"));
+                metricBase + "upstream_time 0.0000 1402888500",
+                metricBase + "upstream_time 0.0000 1402960980",
+                metricBase + "upstream_time 0.0020 1402544220",
+                metricBase + "upstream_time 0.0020 1402544280",
+                metricBase + "upstream_time 0.0020 1402544340",
+                metricBase + "upstream_time 0.0020 1402544400",
+                metricBase + "upstream_time 0.0020 1402544460",
+                metricBase + "upstream_time_min 0.0000 1402888500",
+                metricBase + "upstream_time_min 0.0000 1402960980",
+                metricBase + "upstream_time_min 0.0020 1402544220",
+                metricBase + "upstream_time_min 0.0020 1402544280",
+                metricBase + "upstream_time_min 0.0020 1402544340",
+                metricBase + "upstream_time_min 0.0020 1402544400",
+                metricBase + "upstream_time_min 0.0020 1402544460",
+                metricBase + "upstream_time_max 0.0000 1402888500",
+                metricBase + "upstream_time_max 0.0000 1402960980",
+                metricBase + "upstream_time_max 0.0020 1402544220",
+                metricBase + "upstream_time_max 0.0020 1402544280",
+                metricBase + "upstream_time_max 0.0020 1402544340",
+                metricBase + "upstream_time_max 0.0020 1402544400",
+                metricBase + "upstream_time_max 0.0020 1402544460",
+                metricBase + "upstream_time_stdev 0.0000 1402888500",
+                metricBase + "upstream_time_stdev 0.0000 1402960980",
+                metricBase + "upstream_time_stdev 0.0000 1402544220",
+                metricBase + "upstream_time_stdev 0.0000 1402544280",
+                metricBase + "upstream_time_stdev 0.0000 1402544340",
+                metricBase + "upstream_time_stdev 0.0000 1402544400",
+                metricBase + "upstream_time_stdev 0.0000 1402544460"));
 
         HashSet<String> metricSet = new HashSet<>(new ArrayList<>(metrics));
 
