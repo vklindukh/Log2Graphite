@@ -83,7 +83,7 @@ public class Collector {
                         }
 
                         outputMetric.get(timestamp).setLastUploaded();
-                        LOG.debug("uploaded " + timestamp + " : " + metricFormatted);
+                        LOG.info("uploaded " + timestamp + " : " + metricFormatted);
                     } catch (IOException e) {
                         LOG.error(e.getMessage() + " while sending metric to " + receiver.getName());
                         Thread.sleep(500);

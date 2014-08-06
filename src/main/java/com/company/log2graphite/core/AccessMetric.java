@@ -11,6 +11,7 @@ public class AccessMetric {
     private short min;
     private long requests;
     private long size;
+    private long new_sessions;
     private FloatMetric request_time = new FloatMetric();
     private FloatMetric upstream_time = new FloatMetric();
     private HttpMethod methods = new HttpMethod();
@@ -22,6 +23,7 @@ public class AccessMetric {
     public synchronized boolean update(AccessMetric n) {
         this.requests += n.requests;
         this.size += n.size;
+        this.new_sessions += n.new_sessions;
         this.request_time.update(n.request_time);
         this.upstream_time.update(n.upstream_time);
         this.methods.update(n.methods);
@@ -45,6 +47,7 @@ public class AccessMetric {
         }
 
         metricFormatted.put("requests", Long.toString(requests));
+        metricFormatted.put("new_sessions", Long.toString(new_sessions));
         metricFormatted.put("size", Long.toString(size / requests));
         metricFormatted.put("request_time", String.format("%.4f", request_time.getSum() / requests));
         metricFormatted.put("request_time_min", String.format("%.4f", request_time.getMin()));
@@ -75,6 +78,7 @@ public class AccessMetric {
         String s = "  timestamp : " + Long.toString(timestamp) + " [ " + time + " ]" + System.getProperty("line.separator");
         s += "  min : " + Short.toString(min) + System.getProperty("line.separator");
         s += "  requests : " + Long.toString(requests) + System.getProperty("line.separator");
+        s += "  new_sessions : " + Long.toString(new_sessions) + System.getProperty("line.separator");
         s += "  size : "  + Long.toString(size) + System.getProperty("line.separator");
         s += "  request_time : "  + Float.toString(request_time.getSum()) + System.getProperty("line.separator");
         s += "  request_time_min : "  + Float.toString(request_time.getMin()) + System.getProperty("line.separator");
@@ -106,6 +110,10 @@ public class AccessMetric {
 
     public void setRequests(long requests) {
         this.requests = requests;
+    }
+
+    public void setNew_sessions(long new_sessions) {
+        this.new_sessions = new_sessions;
     }
 
     public void setSize(long size) {

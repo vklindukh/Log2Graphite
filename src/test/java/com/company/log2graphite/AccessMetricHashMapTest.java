@@ -39,8 +39,9 @@ public class AccessMetricHashMapTest {
 
         metricFormatted = h.get(1402544220L).format();
 
-        assertEquals(15, metricFormatted.size());
+        assertEquals(16, metricFormatted.size());
         assertEquals(2L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(2L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.003, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);
@@ -58,8 +59,9 @@ public class AccessMetricHashMapTest {
 
         metricFormatted = h.get(1402544280L).format();
 
-        assertEquals(15, metricFormatted.size());
+        assertEquals(16, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(1L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);

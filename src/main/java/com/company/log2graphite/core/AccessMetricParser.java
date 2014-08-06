@@ -70,6 +70,13 @@ public class AccessMetricParser {
                 if (logFormat.containsKey("code")) {
                     metric.getCodes().put(Integer.parseInt(matchedField[logFormat.get("code")].replace("\"", "").replace("'", "")), 1L);
                 }
+                try {
+                    if (logFormat.containsKey("connection_requests") && (Long.parseLong(matchedField[logFormat.get("connection_requests")].replace("\"", "")) == 1)) {
+                        metric.setNew_sessions(1);
+                    }
+                } catch (NumberFormatException m) {
+                    metric.setNew_sessions(1);
+                }
                 metric.setRequests(1);
                 metric.setLastUpdated();
                 return  metric;
@@ -115,6 +122,7 @@ public class AccessMetricParser {
         }
 
         Map<String, String> knownFields = new HashMap<>();
+        knownFields.put("$connection_requests", "connection_requests");
         knownFields.put("$time_local", "timestamp");
         knownFields.put("$body_bytes_sent", "size");
         knownFields.put("$request", "request");

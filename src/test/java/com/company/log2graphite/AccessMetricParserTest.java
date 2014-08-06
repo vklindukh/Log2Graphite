@@ -85,8 +85,9 @@ public class AccessMetricParserTest {
 
         HashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(15, metricFormatted.size());
+        assertEquals(16, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(1L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);
@@ -128,8 +129,9 @@ public class AccessMetricParserTest {
 
         HashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(13, metricFormatted.size());
+        assertEquals(14, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(1L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time_min")), 0.0001);

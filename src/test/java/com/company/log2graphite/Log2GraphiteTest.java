@@ -46,6 +46,7 @@ public class Log2GraphiteTest {
         Map<String, String> finalMetric = new HashMap<>();
 
         finalMetric.put("requests", "2");
+        finalMetric.put("new_sessions", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
         finalMetric.put("request_time_min", "0.0020");
@@ -64,6 +65,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "2");
+        finalMetric.put("new_sessions", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
         finalMetric.put("request_time_min", "0.0020");
@@ -82,6 +84,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "3");
+        finalMetric.put("new_sessions", "3");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
         finalMetric.put("request_time_min", "0.0020");
@@ -100,6 +103,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("new_sessions", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
         finalMetric.put("request_time_min", "0.0020");
@@ -118,6 +122,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("new_sessions", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
         finalMetric.put("request_time_min", "0.0020");
@@ -136,6 +141,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("new_sessions", "0");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "60.0010");
         finalMetric.put("request_time_min", "60.0010");
@@ -154,6 +160,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("new_sessions", "1");
         finalMetric.put("size", "252");
         finalMetric.put("request_time", "0.0000");
         finalMetric.put("request_time_min", "0.0000");
@@ -191,7 +198,7 @@ public class Log2GraphiteTest {
 
         Thread.sleep(1000);
 
-        assertEquals(105, metrics.size());
+        assertEquals(112, metrics.size());
 
         String metricBase = "access." + InetAddress.getLocalHost().getHostName() + ".";
         HashSet<String> expectedMetricSet = new HashSet<>(Arrays.asList(
@@ -256,6 +263,13 @@ public class Log2GraphiteTest {
                 metricBase + "requests 2 1402544220",
                 metricBase + "requests 2 1402544280",
                 metricBase + "requests 3 1402544340",
+                metricBase + "new_sessions 1 1402544400",
+                metricBase + "new_sessions 1 1402544460",
+                metricBase + "new_sessions 1 1402888500",
+                metricBase + "new_sessions 0 1402960980",
+                metricBase + "new_sessions 2 1402544220",
+                metricBase + "new_sessions 2 1402544280",
+                metricBase + "new_sessions 3 1402544340",
                 metricBase + "size 0 1402544220",
                 metricBase + "size 0 1402544280",
                 metricBase + "size 0 1402544340",
