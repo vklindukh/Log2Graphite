@@ -2,6 +2,7 @@ package com.company.log2graphite.core;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -45,14 +46,16 @@ public class AccessMetric {
 
         metricFormatted.put("requests", Long.toString(requests));
         metricFormatted.put("size", Long.toString(size / requests));
-        metricFormatted.put("request_time", String.format("%.4f",request_time.getSum() / requests));
-        metricFormatted.put("request_time_min", String.format("%.4f",request_time.getMin()));
-        metricFormatted.put("request_time_max", String.format("%.4f",request_time.getMax()));
+        metricFormatted.put("request_time", String.format("%.4f", request_time.getSum() / requests));
+        metricFormatted.put("request_time_min", String.format("%.4f", request_time.getMin()));
+        metricFormatted.put("request_time_max", String.format("%.4f", request_time.getMax()));
         metricFormatted.put("request_time_stdev", String.format("%.4f", request_time.getStDev()));
-        metricFormatted.put("upstream_time", String.format("%.4f",upstream_time.getSum() / requests));
-        metricFormatted.put("upstream_time_min", String.format("%.4f",upstream_time.getMin()));
-        metricFormatted.put("upstream_time_max", String.format("%.4f",upstream_time.getMax()));
-        metricFormatted.put("upstream_time_stdev", String.format("%.4f",upstream_time.getStDev()));
+        metricFormatted.put("request_time_99", String.format("%.4f", request_time.get99()));
+        metricFormatted.put("upstream_time", String.format("%.4f", upstream_time.getSum() / requests));
+        metricFormatted.put("upstream_time_min", String.format("%.4f", upstream_time.getMin()));
+        metricFormatted.put("upstream_time_max", String.format("%.4f", upstream_time.getMax()));
+        metricFormatted.put("upstream_time_stdev", String.format("%.4f", upstream_time.getStDev()));
+        metricFormatted.put("upstream_time_99", String.format("%.4f", upstream_time.get99()));
 
         for (String key : methods.keySet()) {
             metricFormatted.put(key, Long.toString(methods.get(key)));
@@ -77,10 +80,12 @@ public class AccessMetric {
         s += "  request_time_min : "  + Float.toString(request_time.getMin()) + System.getProperty("line.separator");
         s += "  request_time_max : "  + Float.toString(request_time.getMax()) + System.getProperty("line.separator");
         s += "  request_time_stdev : "  + Float.toString(request_time.getStDev()) + System.getProperty("line.separator");
+        s += "  request_time_99 : "  + Float.toString(request_time.get99()) + System.getProperty("line.separator");
         s += "  upstream_time : "  + Float.toString(upstream_time.getSum()) + System.getProperty("line.separator");
         s += "  upstream_time_min : "  + Float.toString(upstream_time.getMin()) + System.getProperty("line.separator");
         s += "  upstream_time_max : "  + Float.toString(upstream_time.getMax()) + System.getProperty("line.separator");
         s += "  upstream_time_stdev : "  + Float.toString(upstream_time.getStDev()) + System.getProperty("line.separator");
+        s += "  upstream_time_99 : "  + Float.toString(upstream_time.get99()) + System.getProperty("line.separator");
         s += "  methods : " + methods.toString() + System.getProperty("line.separator");
         s += "  types : " + types.toString() + System.getProperty("line.separator");
         s += "  codes : " + codes.toString() + System.getProperty("line.separator");
@@ -208,6 +213,7 @@ public class AccessMetric {
         private float min;
         private float sum;
         private float max;
+        boolean sorted = false;
 
         void set(float metric) {
             sum = metric;
@@ -216,6 +222,7 @@ public class AccessMetric {
             metrics = new ArrayList<>();
             metrics.add(metric);
             counter = 1;
+            sorted = true;
         }
 
         void update(FloatMetric n) {
@@ -228,6 +235,7 @@ public class AccessMetric {
             }
             metrics.addAll(n.metrics);
             counter += n.counter;
+            sorted = false;
         }
 
         float getSum() {
@@ -247,21 +255,31 @@ public class AccessMetric {
         }
 
         float getStDev() {
-            float localMax = 0;
             if (counter == 0) {
                 return 0;
             }
             float average = getAverage();
             double metricsSum = 0;
             for (float m : metrics) {
-                if (m > localMax) {
-                    localMax = m;
-                }
                 metricsSum += Math.pow(average - m, 2);
             }
-            System.out.println("counter : " + counter + ", real size : " + metrics.size());
-            System.out.println("min : " + min + "; average : " + average + "; max : " + max + "; localMax : " + localMax + "; stdev : " + Math.sqrt(metricsSum / counter));
             return (float) Math.sqrt(metricsSum / counter);
+        }
+
+        float get99() {
+            int counter99;
+            if (counter == 0) {
+                return (float) 0.0;
+            } else if (counter < 100) {
+                counter99 = metrics.size() - 1;
+            } else {
+                counter99 = (int) (counter * 0.99);
+            }
+            if (! sorted) {
+                Collections.sort(metrics);
+                sorted = true;
+            }
+            return metrics.get(counter99);
         }
     }
 

@@ -51,10 +51,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "0.0020");
         finalMetric.put("request_time_max", "0.0020");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "0.0020");
         finalMetric.put("upstream_time", "0.0020");
         finalMetric.put("upstream_time_min", "0.0020");
         finalMetric.put("upstream_time_max", "0.0020");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0020");
         finalMetric.put("POST", "2");
         finalMetric.put("ad", "2");
         finalMetric.put("204", "2");
@@ -67,10 +69,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "0.0020");
         finalMetric.put("request_time_max", "0.0020");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "0.0020");
         finalMetric.put("upstream_time", "0.0020");
         finalMetric.put("upstream_time_min", "0.0020");
         finalMetric.put("upstream_time_max", "0.0020");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0020");
         finalMetric.put("POST", "2");
         finalMetric.put("ad", "2");
         finalMetric.put("204", "2");
@@ -83,10 +87,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "0.0020");
         finalMetric.put("request_time_max", "0.0020");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "0.0020");
         finalMetric.put("upstream_time", "0.0020");
         finalMetric.put("upstream_time_min", "0.0020");
         finalMetric.put("upstream_time_max", "0.0020");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0020");
         finalMetric.put("POST", "3");
         finalMetric.put("ad", "3");
         finalMetric.put("204", "3");
@@ -99,10 +105,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "0.0020");
         finalMetric.put("request_time_max", "0.0020");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "0.0020");
         finalMetric.put("upstream_time", "0.0020");
         finalMetric.put("upstream_time_min", "0.0020");
         finalMetric.put("upstream_time_max", "0.0020");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0020");
         finalMetric.put("POST", "1");
         finalMetric.put("ad", "1");
         finalMetric.put("204", "1");
@@ -115,10 +123,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "0.0020");
         finalMetric.put("request_time_max", "0.0020");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "0.0020");
         finalMetric.put("upstream_time", "0.0020");
         finalMetric.put("upstream_time_min", "0.0020");
         finalMetric.put("upstream_time_max", "0.0020");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0020");
         finalMetric.put("POST", "1");
         finalMetric.put("ad", "1");
         finalMetric.put("204", "1");
@@ -131,10 +141,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "60.0010");
         finalMetric.put("request_time_max", "60.0010");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "60.0010");
         finalMetric.put("upstream_time", "0.0000");
         finalMetric.put("upstream_time_min", "0.0000");
         finalMetric.put("upstream_time_max", "0.0000");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0000");
         finalMetric.put("OTHER_METHOD", "1");
         finalMetric.put("type_unknown", "1");
         finalMetric.put("408", "1");
@@ -147,10 +159,12 @@ public class Log2GraphiteTest {
         finalMetric.put("request_time_min", "0.0000");
         finalMetric.put("request_time_max", "0.0000");
         finalMetric.put("request_time_stdev", "0.0000");
+        finalMetric.put("request_time_99", "0.0000");
         finalMetric.put("upstream_time", "0.0000");
         finalMetric.put("upstream_time_min", "0.0000");
         finalMetric.put("upstream_time_max", "0.0000");
         finalMetric.put("upstream_time_stdev", "0.0000");
+        finalMetric.put("upstream_time_99", "0.0000");
         finalMetric.put("GET", "1");
         finalMetric.put("type_unknown", "1");
         finalMetric.put("400", "1");
@@ -177,7 +191,7 @@ public class Log2GraphiteTest {
 
         Thread.sleep(1000);
 
-        assertEquals(91, metrics.size());
+        assertEquals(105, metrics.size());
 
         String metricBase = "access." + InetAddress.getLocalHost().getHostName() + ".";
         HashSet<String> expectedMetricSet = new HashSet<>(Arrays.asList(
@@ -221,6 +235,13 @@ public class Log2GraphiteTest {
                 metricBase + "request_time_max 0.0020 1402544400",
                 metricBase + "request_time_max 0.0020 1402544460",
                 metricBase + "request_time_max 60.0010 1402960980",
+                metricBase + "request_time_99 0.0000 1402888500",
+                metricBase + "request_time_99 0.0020 1402544220",
+                metricBase + "request_time_99 0.0020 1402544280",
+                metricBase + "request_time_99 0.0020 1402544340",
+                metricBase + "request_time_99 0.0020 1402544400",
+                metricBase + "request_time_99 0.0020 1402544460",
+                metricBase + "request_time_99 60.0010 1402960980",
                 metricBase + "request_time_stdev 0.0000 1402888500",
                 metricBase + "request_time_stdev 0.0000 1402544220",
                 metricBase + "request_time_stdev 0.0000 1402544280",
@@ -265,6 +286,13 @@ public class Log2GraphiteTest {
                 metricBase + "upstream_time_max 0.0020 1402544340",
                 metricBase + "upstream_time_max 0.0020 1402544400",
                 metricBase + "upstream_time_max 0.0020 1402544460",
+                metricBase + "upstream_time_99 0.0000 1402888500",
+                metricBase + "upstream_time_99 0.0000 1402960980",
+                metricBase + "upstream_time_99 0.0020 1402544220",
+                metricBase + "upstream_time_99 0.0020 1402544280",
+                metricBase + "upstream_time_99 0.0020 1402544340",
+                metricBase + "upstream_time_99 0.0020 1402544400",
+                metricBase + "upstream_time_99 0.0020 1402544460",
                 metricBase + "upstream_time_stdev 0.0000 1402888500",
                 metricBase + "upstream_time_stdev 0.0000 1402960980",
                 metricBase + "upstream_time_stdev 0.0000 1402544220",
@@ -277,6 +305,74 @@ public class Log2GraphiteTest {
 
         assertEquals(expectedMetricSet, metricSet);
     }
+
+/*
+    @Test
+    public void max99Test() throws Exception {
+        BlockingQueue<String> logInputQueue = new ArrayBlockingQueue<>(128);
+        BlockingQueue<AccessMetric> logInputMetric = new ArrayBlockingQueue<>(128);
+        BlockingQueue<String> metrics = new ArrayBlockingQueue<>(128);
+        ExecutorService execParser = Executors.newFixedThreadPool(1);
+        execParser.execute(new TCPServer(metrics));
+
+        Args cli = new Args( new String[]{"-f", "file"});
+        Reader reader = new Reader("./src/test/resources/access2.log.gz", cli, logInputQueue);
+        reader.run();
+        Props properties = new Props("./src/test/resources/log4j.properties");
+        AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
+        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat());
+        logParser.run();
+        Collector collector = new Collector(logInputMetric, 60000, new Graphite(cli.getHostname(), "127.0.0.1", 2003));
+        collector.run();
+
+        Thread.sleep(1000);
+
+        assertEquals(30, metrics.size());
+
+        String metricBase = "access." + InetAddress.getLocalHost().getHostName() + ".";
+        HashSet<String> expectedMetricSet = new HashSet<>(Arrays.asList(
+                metricBase + "200 53175 1406173200",
+                metricBase + "400 109 1406173200",
+                metricBase + "500 2 1406173200",
+                metricBase + "204 13432 1406173200",
+                metricBase + "GET 19218 1406173200",
+                metricBase + "POST 47500 1406173200",
+                metricBase + "ad 47500 1406173200",
+                metricBase + "track 19208 1406173200",
+                metricBase + "requests 66718 1406173200",
+                metricBase + "size 2193 1406173200",
+                metricBase + "request_time 0.0075 1406173200",
+                metricBase + "request_time_min 0.0000 1406173200",
+                metricBase + "request_time_max 40.3550 1406173200",
+                metricBase + "request_time_99 0.0150 1406173200",
+                metricBase + "request_time_stdev 0.2035 1406173200",
+                metricBase + "upstream_time 0.0023 1406173200",
+                metricBase + "upstream_time_min 0.0000 1406173200",
+                metricBase + "upstream_time_max 0.1030 1406173200",
+                metricBase + "upstream_time_99 0.0050 1406173200",
+                metricBase + "upstream_time_stdev 0.0027 1406173200",
+                metricBase + "204 1 1406173260",
+                metricBase + "POST 1 1406173260",
+                metricBase + "ad 1 1406173260",
+                metricBase + "request_time 0.0020 1406173260",
+                metricBase + "request_time_min 0.0020 1406173260",
+                metricBase + "request_time_max 0.0020 1406173260",
+                metricBase + "request_time_99 0.0020 1406173260",
+                metricBase + "request_time_stdev 0.0000 1406173260",
+                metricBase + "requests 1 1406173260",
+                metricBase + "size 0 1406173260",
+                metricBase + "upstream_time 0.0020 1406173260",
+                metricBase + "upstream_time_min 0.0020 1406173260",
+                metricBase + "upstream_time_max 0.0020 1406173260",
+                metricBase + "upstream_time_99 0.0020 1406173260",
+                metricBase + "upstream_time_stdev 0.0000 1406173260"
+                ));
+
+        HashSet<String> metricSet = new HashSet<>(new ArrayList<>(metrics));
+
+        assertEquals(expectedMetricSet, metricSet);
+    }
+*/
 
     private class TCPServer implements Runnable {
         ServerSocket server;
