@@ -12,17 +12,17 @@ public class AccessMetricParserTest {
 
     @Test(expected = IllegalStateException.class)
     public void parsePropertiesWithException1() throws ParseException {
-        new AccessMetricParser((String) null);
+        new AccessMetricParser((String) null, "");
     }
 
     @Test(expected = IllegalStateException.class)
     public void parsePropertiesWithException2() throws ParseException {
-        new AccessMetricParser("");
+        new AccessMetricParser("", "");
     }
 
     @Test(expected = ParseException.class)
     public void parsePropertiesWithException3() throws ParseException {
-        new AccessMetricParser("AA");
+        new AccessMetricParser("AA", "");
     }
 
     @Test
@@ -30,7 +30,7 @@ public class AccessMetricParserTest {
         AccessMetricParser metricParser = new AccessMetricParser("'$remote_addr - $remote_user [$time_local] \"$request\" '" +
                 "           '$status $body_bytes_sent \"$request_body\" '" +
                 "           '\"$connection_requests\" \"$http_connection\" '" +
-                "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';");
+                "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';", "");
 
         HashMap<String, Integer> logFormat = metricParser.getLogFormat();
         int value = logFormat.get("fields");
@@ -55,7 +55,7 @@ public class AccessMetricParserTest {
         new AccessMetricParser("'$remote_addr - $remote_user \"$request\" '" +
                 "           '$status $body_bytes_sent \"$request_body\" '" +
                 "           '\"$connection_requests\" \"$http_connection\" '" +
-                "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';");
+                "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';", "");
 
     }
 
@@ -64,7 +64,7 @@ public class AccessMetricParserTest {
         AccessMetricParser metricParser = new AccessMetricParser("'$remote_addr - $remote_user [$time_local] \"$request\" '" +
                 "           '$status $body_bytes_sent \"$request_body\" '" +
                 "           '\"$connection_requests\" \"$http_connection\" '" +
-                "           '\"$http_user_agent\" \"$http_x_forwarded_for\"");
+                "           '\"$http_user_agent\" \"$http_x_forwarded_for\"", "");
 
         HashMap<String, Integer> logFormat = metricParser.getLogFormat();
         int value = logFormat.get("fields");
@@ -85,8 +85,9 @@ public class AccessMetricParserTest {
 
         HashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(16, metricFormatted.size());
+        assertEquals(17, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(1L, Long.parseLong(metricFormatted.get("requests_taken")));
         assertEquals(1L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
@@ -110,7 +111,7 @@ public class AccessMetricParserTest {
         AccessMetricParser metricParser = new AccessMetricParser("'$remote_addr - $remote_user [$time_local] '" +
                 "           '$status $body_bytes_sent \"$request_body\" '" +
                 "           '\"$connection_requests\" \"$http_connection\" '" +
-                "           '\"$http_user_agent\" \"$http_x_forwarded_for\"");
+                "           '\"$http_user_agent\" \"$http_x_forwarded_for\"", "");
 
         HashMap<String, Integer> logFormat = metricParser.getLogFormat();
         int value = logFormat.get("fields");
@@ -129,8 +130,9 @@ public class AccessMetricParserTest {
 
         HashMap<String , String> metricFormatted = metric.format();
 
-        assertEquals(14, metricFormatted.size());
+        assertEquals(15, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(1L, Long.parseLong(metricFormatted.get("requests_taken")));
         assertEquals(1L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);

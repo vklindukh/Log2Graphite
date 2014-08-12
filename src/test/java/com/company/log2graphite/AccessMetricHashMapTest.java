@@ -3,6 +3,8 @@ package com.company.log2graphite;
 import com.company.log2graphite.core.AccessMetric;
 import com.company.log2graphite.core.AccessMetricHashMap;
 import com.company.log2graphite.core.AccessMetricParser;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -14,9 +16,12 @@ public class AccessMetricHashMapTest {
         AccessMetricParser metricParserBuilder = new AccessMetricParser("'$remote_addr - $remote_user [$time_local] \"$request\" '" +
                 "           '$status $body_bytes_sent \"$request_body\" '" +
                 "           '\"$connection_requests\" \"$http_connection\" '" +
-                "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';");
+                "           '\"$http_user_agent\" \"$http_x_forwarded_for\" \"$request_time\" \"$upstream_response_time\" \"$pipe\"';", "");
 
-        AccessMetricParser metricParser = new AccessMetricParser(metricParserBuilder.getLogFormat());
+        ArrayList<String> allowedRequests99 = new ArrayList();
+        allowedRequests99.add("/adserver/track?");
+        allowedRequests99.add("/adserver/ad?");
+        AccessMetricParser metricParser = new AccessMetricParser(metricParserBuilder.getLogFormat(), allowedRequests99);
 
         AccessMetricHashMap h = new AccessMetricHashMap();
 
@@ -39,8 +44,9 @@ public class AccessMetricHashMapTest {
 
         metricFormatted = h.get(1402544220L).format();
 
-        assertEquals(16, metricFormatted.size());
+        assertEquals(17, metricFormatted.size());
         assertEquals(2L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(2L, Long.parseLong(metricFormatted.get("requests_taken")));
         assertEquals(2L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.003, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);
@@ -59,8 +65,9 @@ public class AccessMetricHashMapTest {
 
         metricFormatted = h.get(1402544280L).format();
 
-        assertEquals(16, metricFormatted.size());
+        assertEquals(17, metricFormatted.size());
         assertEquals(1L, Long.parseLong(metricFormatted.get("requests")));
+        assertEquals(1L, Long.parseLong(metricFormatted.get("requests_taken")));
         assertEquals(1L, Long.parseLong(metricFormatted.get("new_sessions")));
         assertEquals(15L, Long.parseLong(metricFormatted.get("size")));
         assertEquals(0.002, Double.parseDouble(metricFormatted.get("request_time")), 0.0001);

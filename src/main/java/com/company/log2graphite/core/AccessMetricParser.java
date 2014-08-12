@@ -1,12 +1,11 @@
 package com.company.log2graphite.core;
 
+import com.company.log2graphite.Props;
 import org.apache.log4j.Logger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,13 +19,20 @@ public class AccessMetricParser {
     private Pattern logPattern = Pattern.compile(logEntryPattern);
     private Matcher matcher = logPattern.matcher("");
     private DateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss z");
+    private ArrayList<String> allowedRequests = new ArrayList();
 
-    public AccessMetricParser(HashMap<String, Integer> logFormat) {
-        this.logFormat = logFormat;
+    public AccessMetricParser(Props properties) throws ParseException {
+        this(properties.getLogFormat(), properties.getAllowedRequests());
     }
 
-    public AccessMetricParser(String s) throws ParseException {
-        formatParse(s);
+    public AccessMetricParser(String format, String allowedRequests) throws ParseException {
+        formatParse(format);
+        formatAllowedRequests(allowedRequests);
+    }
+
+    public AccessMetricParser(HashMap<String, Integer> logFormat, ArrayList<String> allowedRequests) {
+        this.logFormat = logFormat;
+        this.allowedRequests = allowedRequests;
     }
 
     public AccessMetric parse(String s) throws ParseException {
@@ -57,15 +63,20 @@ public class AccessMetricParser {
                 if (logFormat.containsKey("size")) {
                     metric.setSize(Integer.parseInt(matchedField[logFormat.get("size")].replace("\"", "").replace("'", "")));
                 }
-                if (logFormat.containsKey("request_time")) {
-                    metric.setRequest_time(Float.parseFloat(matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "")));
-                }
-                if (logFormat.containsKey("upstream_time")) {
-                    metric.setUpstream_time(Float.parseFloat(matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "")));
-                }
+                String requestHTTP = null;
                 if (logFormat.containsKey("request")) {
-                    metric.getMethods().insert(matchedField[logFormat.get("request")].replace("\"", "").replace("'", ""));
-                    metric.getTypes().insert(matchedField[logFormat.get("request")].replace("\"", "").replace("'", ""));
+                    requestHTTP = matchedField[logFormat.get("request")].replace("\"", "").replace("'", "");
+                    metric.getMethods().insert(requestHTTP);
+                    metric.getTypes().insert(requestHTTP);
+                }
+                if (request_allowed(requestHTTP)) {
+                    metric.setRequestsTaken(1);
+                    if (logFormat.containsKey("request_time")) {
+                        metric.setRequest_time(Float.parseFloat(matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "")));
+                    }
+                    if (logFormat.containsKey("upstream_time")) {
+                        metric.setUpstream_time(Float.parseFloat(matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "")));
+                    }
                 }
                 if (logFormat.containsKey("code")) {
                     metric.getCodes().put(Integer.parseInt(matchedField[logFormat.get("code")].replace("\"", "").replace("'", "")), 1L);
@@ -85,13 +96,33 @@ public class AccessMetricParser {
             throw new ParseException(m.toString() + " : " + s, 0);
         }
 
-        throw new ParseException("cannot parse '" + s + "'", 0);
+        throw new ParseException("cannot parse", 0);
     }
 
     public HashMap<String, Integer> getLogFormat() {
         return logFormat;
     }
 
+    public ArrayList<String> getAllowedRequests() {
+        return allowedRequests;
+    }
+
+    private boolean request_allowed(String request) {
+        if (allowedRequests.size() == 0) {
+            return true;
+        }
+        if (request != null) {
+            int position = request.indexOf(" ");
+            if (position > 1) {
+                for (String s : allowedRequests) {
+                    if ((request.substring(position + 1).length() >= s.length()) && request.substring(position + 1).startsWith(s)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     private void formatParse(String s) throws ParseException {
         if ((s == null) || (s.length() == 0) || (s.equals(""))) {
@@ -141,6 +172,14 @@ public class AccessMetricParser {
         }
 
         LOG.info("parsed log format : " + logFormat);
+    }
+
+    private void formatAllowedRequests(String s) {
+        if ((s == null) || s.length() == 0 ) {
+            this.allowedRequests = new ArrayList();
+        } else {
+            this.allowedRequests = new ArrayList(Arrays.asList(s.split(" ")));
+        }
     }
 
     private long parseTimestamp(String s) throws ParseException {

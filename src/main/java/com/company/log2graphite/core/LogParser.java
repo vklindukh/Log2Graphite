@@ -2,6 +2,7 @@ package com.company.log2graphite.core;
 
 import org.apache.log4j.Logger;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
@@ -15,10 +16,10 @@ public class LogParser implements Runnable {
     private long aggregatedMetricTimestamp;
     private long queueUpdateLastTime;
 
-    public LogParser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat) throws ParseException {
+    public LogParser(BlockingQueue<String> q, BlockingQueue<AccessMetric> m, HashMap<String, Integer> logFormat, ArrayList<String> allowedRequests) throws ParseException {
         logInputQueue = q;
         logInputMetric = m;
-        metricParser = new AccessMetricParser(logFormat);
+        metricParser = new AccessMetricParser(logFormat, allowedRequests);
     }
 
     public void run() {

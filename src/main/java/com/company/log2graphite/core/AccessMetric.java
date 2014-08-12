@@ -10,6 +10,7 @@ public class AccessMetric {
     private long timestamp;
     private short min;
     private long requests;
+    private long requestsTaken;
     private long size;
     private long new_sessions;
     private FloatMetric request_time = new FloatMetric();
@@ -22,6 +23,7 @@ public class AccessMetric {
 
     public synchronized boolean update(AccessMetric n) {
         this.requests += n.requests;
+        this.requestsTaken += n.requestsTaken;
         this.size += n.size;
         this.new_sessions += n.new_sessions;
         this.request_time.update(n.request_time);
@@ -47,14 +49,15 @@ public class AccessMetric {
         }
 
         metricFormatted.put("requests", Long.toString(requests));
+        metricFormatted.put("requests_taken", Long.toString(requestsTaken));
         metricFormatted.put("new_sessions", Long.toString(new_sessions));
         metricFormatted.put("size", Long.toString(size / requests));
-        metricFormatted.put("request_time", String.format("%.4f", request_time.getSum() / requests));
+        metricFormatted.put("request_time", String.format("%.4f", request_time.getAverage()));
         metricFormatted.put("request_time_min", String.format("%.4f", request_time.getMin()));
         metricFormatted.put("request_time_max", String.format("%.4f", request_time.getMax()));
         metricFormatted.put("request_time_stdev", String.format("%.4f", request_time.getStDev()));
         metricFormatted.put("request_time_99", String.format("%.4f", request_time.get99()));
-        metricFormatted.put("upstream_time", String.format("%.4f", upstream_time.getSum() / requests));
+        metricFormatted.put("upstream_time", String.format("%.4f", upstream_time.getAverage()));
         metricFormatted.put("upstream_time_min", String.format("%.4f", upstream_time.getMin()));
         metricFormatted.put("upstream_time_max", String.format("%.4f", upstream_time.getMax()));
         metricFormatted.put("upstream_time_stdev", String.format("%.4f", upstream_time.getStDev()));
@@ -78,6 +81,7 @@ public class AccessMetric {
         String s = "  timestamp : " + Long.toString(timestamp) + " [ " + time + " ]" + System.getProperty("line.separator");
         s += "  min : " + Short.toString(min) + System.getProperty("line.separator");
         s += "  requests : " + Long.toString(requests) + System.getProperty("line.separator");
+        s += "  requests_taken : " + Long.toString(requestsTaken) + System.getProperty("line.separator");
         s += "  new_sessions : " + Long.toString(new_sessions) + System.getProperty("line.separator");
         s += "  size : "  + Long.toString(size) + System.getProperty("line.separator");
         s += "  request_time : "  + Float.toString(request_time.getSum()) + System.getProperty("line.separator");
@@ -110,6 +114,10 @@ public class AccessMetric {
 
     public void setRequests(long requests) {
         this.requests = requests;
+    }
+
+    public void setRequestsTaken(long requestsTaken) {
+        this.requestsTaken = requestsTaken;
     }
 
     public void setNew_sessions(long new_sessions) {
@@ -259,7 +267,11 @@ public class AccessMetric {
         }
 
         float getAverage() {
-            return sum / counter;
+            if (counter > 0) {
+                return getSum() / counter;
+            } else {
+                return 0;
+            }
         }
 
         float getStDev() {
@@ -290,5 +302,4 @@ public class AccessMetric {
             return metrics.get(counter99);
         }
     }
-
  }

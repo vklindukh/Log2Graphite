@@ -23,6 +23,7 @@ public class Log2Graphite {
         try {
             cli = new Args(args);
             properties = new Props(cli.getConfigFile());
+            System.out.println(properties);
         } catch (ParseException | IOException m) {
             System.err.println(m);
             System.exit(255);
@@ -40,10 +41,10 @@ public class Log2Graphite {
             }
 
             // run parsers
-            AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
+            AccessMetricParser accessMetricParser = new AccessMetricParser(properties);
             ExecutorService execParser = Executors.newFixedThreadPool(cli.getParserNumThreads());
             for (int i = 0; i < cli.getParserNumThreads(); i++) {
-                execParser.execute(new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat()));
+                execParser.execute(new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat(), accessMetricParser.getAllowedRequests()));
             }
 
             // run collector

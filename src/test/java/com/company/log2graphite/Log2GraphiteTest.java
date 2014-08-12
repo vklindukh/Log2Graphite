@@ -29,8 +29,8 @@ public class Log2GraphiteTest {
         assertEquals(12, logInputQueue.size());
 
         Props properties = new Props("./src/test/resources/log4j.properties");
-        AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
-        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat());
+        AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat(), properties.getAllowedRequests());
+        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat(), accessMetricParser.getAllowedRequests());
         logParser.run();
 
         assertEquals(1, logInputQueue.size());
@@ -46,6 +46,7 @@ public class Log2GraphiteTest {
         Map<String, String> finalMetric = new HashMap<>();
 
         finalMetric.put("requests", "2");
+        finalMetric.put("requests_taken", "2");
         finalMetric.put("new_sessions", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
@@ -65,6 +66,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "2");
+        finalMetric.put("requests_taken", "2");
         finalMetric.put("new_sessions", "2");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
@@ -84,6 +86,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "3");
+        finalMetric.put("requests_taken", "3");
         finalMetric.put("new_sessions", "3");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
@@ -103,6 +106,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("requests_taken", "1");
         finalMetric.put("new_sessions", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
@@ -122,6 +126,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("requests_taken", "1");
         finalMetric.put("new_sessions", "1");
         finalMetric.put("size", "0");
         finalMetric.put("request_time", "0.0020");
@@ -141,13 +146,14 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("requests_taken", "0");
         finalMetric.put("new_sessions", "0");
         finalMetric.put("size", "0");
-        finalMetric.put("request_time", "60.0010");
-        finalMetric.put("request_time_min", "60.0010");
-        finalMetric.put("request_time_max", "60.0010");
+        finalMetric.put("request_time", "0.0000");
+        finalMetric.put("request_time_min", "0.0000");
+        finalMetric.put("request_time_max", "0.0000");
         finalMetric.put("request_time_stdev", "0.0000");
-        finalMetric.put("request_time_99", "60.0010");
+        finalMetric.put("request_time_99", "0.0000");
         finalMetric.put("upstream_time", "0.0000");
         finalMetric.put("upstream_time_min", "0.0000");
         finalMetric.put("upstream_time_max", "0.0000");
@@ -160,6 +166,7 @@ public class Log2GraphiteTest {
 
         finalMetric = new HashMap<>();
         finalMetric.put("requests", "1");
+        finalMetric.put("requests_taken", "0");
         finalMetric.put("new_sessions", "1");
         finalMetric.put("size", "252");
         finalMetric.put("request_time", "0.0000");
@@ -190,15 +197,15 @@ public class Log2GraphiteTest {
         Reader reader = new Reader("./src/test/resources/access.log.gz", cli, logInputQueue);
         reader.run();
         Props properties = new Props("./src/test/resources/log4j.properties");
-        AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat());
-        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat());
+        AccessMetricParser accessMetricParser = new AccessMetricParser(properties.getLogFormat(), properties.getAllowedRequests());
+        LogParser logParser = new LogParser(logInputQueue, logInputMetric, accessMetricParser.getLogFormat(), accessMetricParser.getAllowedRequests());
         logParser.run();
         Collector collector = new Collector(logInputMetric, 60000, new Graphite(cli.getHostname(), "127.0.0.1", 2003));
         collector.run();
 
         Thread.sleep(1000);
 
-        assertEquals(112, metrics.size());
+        assertEquals(119, metrics.size());
 
         String metricBase = "access." + InetAddress.getLocalHost().getHostName() + ".";
         HashSet<String> expectedMetricSet = new HashSet<>(Arrays.asList(
@@ -227,28 +234,28 @@ public class Log2GraphiteTest {
                 metricBase + "request_time 0.0020 1402544340",
                 metricBase + "request_time 0.0020 1402544400",
                 metricBase + "request_time 0.0020 1402544460",
-                metricBase + "request_time 60.0010 1402960980",
+                metricBase + "request_time 0.0000 1402960980",
                 metricBase + "request_time_min 0.0000 1402888500",
                 metricBase + "request_time_min 0.0020 1402544220",
                 metricBase + "request_time_min 0.0020 1402544280",
                 metricBase + "request_time_min 0.0020 1402544340",
                 metricBase + "request_time_min 0.0020 1402544400",
                 metricBase + "request_time_min 0.0020 1402544460",
-                metricBase + "request_time_min 60.0010 1402960980",
+                metricBase + "request_time_min 0.0000 1402960980",
                 metricBase + "request_time_max 0.0000 1402888500",
                 metricBase + "request_time_max 0.0020 1402544220",
                 metricBase + "request_time_max 0.0020 1402544280",
                 metricBase + "request_time_max 0.0020 1402544340",
                 metricBase + "request_time_max 0.0020 1402544400",
                 metricBase + "request_time_max 0.0020 1402544460",
-                metricBase + "request_time_max 60.0010 1402960980",
+                metricBase + "request_time_max 0.0000 1402960980",
                 metricBase + "request_time_99 0.0000 1402888500",
                 metricBase + "request_time_99 0.0020 1402544220",
                 metricBase + "request_time_99 0.0020 1402544280",
                 metricBase + "request_time_99 0.0020 1402544340",
                 metricBase + "request_time_99 0.0020 1402544400",
                 metricBase + "request_time_99 0.0020 1402544460",
-                metricBase + "request_time_99 60.0010 1402960980",
+                metricBase + "request_time_99 0.0000 1402960980",
                 metricBase + "request_time_stdev 0.0000 1402888500",
                 metricBase + "request_time_stdev 0.0000 1402544220",
                 metricBase + "request_time_stdev 0.0000 1402544280",
@@ -263,6 +270,13 @@ public class Log2GraphiteTest {
                 metricBase + "requests 2 1402544220",
                 metricBase + "requests 2 1402544280",
                 metricBase + "requests 3 1402544340",
+                metricBase + "requests_taken 1 1402544400",
+                metricBase + "requests_taken 1 1402544460",
+                metricBase + "requests_taken 0 1402888500",
+                metricBase + "requests_taken 0 1402960980",
+                metricBase + "requests_taken 2 1402544220",
+                metricBase + "requests_taken 2 1402544280",
+                metricBase + "requests_taken 3 1402544340",
                 metricBase + "new_sessions 1 1402544400",
                 metricBase + "new_sessions 1 1402544460",
                 metricBase + "new_sessions 1 1402888500",
