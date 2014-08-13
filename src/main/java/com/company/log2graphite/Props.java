@@ -2,10 +2,7 @@ package com.company.log2graphite;
 
 import org.apache.log4j.Logger;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 
 public class Props {

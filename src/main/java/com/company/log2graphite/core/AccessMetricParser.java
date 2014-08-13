@@ -19,7 +19,7 @@ public class AccessMetricParser {
     private Pattern logPattern = Pattern.compile(logEntryPattern);
     private Matcher matcher = logPattern.matcher("");
     private DateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss z");
-    private ArrayList<String> allowedRequests = new ArrayList();
+    private ArrayList<String> allowedRequests = new ArrayList<>();
 
     public AccessMetricParser(Props properties) throws ParseException {
         this(properties.getLogFormat(), properties.getAllowedRequests());
@@ -176,9 +176,9 @@ public class AccessMetricParser {
 
     private void formatAllowedRequests(String s) {
         if ((s == null) || s.length() == 0 ) {
-            this.allowedRequests = new ArrayList();
+            this.allowedRequests = new ArrayList<>();
         } else {
-            this.allowedRequests = new ArrayList(Arrays.asList(s.split(" ")));
+            this.allowedRequests = new ArrayList<>(Arrays.asList(s.split(" ")));
         }
     }
 
