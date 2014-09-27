@@ -5,18 +5,47 @@ access.log parser.
 Application parse and upload metrics to graphite server in realtime.
 In addition it supports non-realtime operation (reparsing olg logs).
 
+What is it
+---------------
+Sometimes you want to parse logs (maybe in realtime), retrieve some custom metrics and finally got some graphs.
+For log parsing could be used Logstash, which has plugin for uploading metrics to Graphite.
+Such configuraton works fine for most applications.
+
+But not for me. I realized than parsing 100G access.log takes too mutch time. And realtime acccess.log parsing takes too mutch CPU cores for QPS rates 5K and more.
+
+Log2Graphite app is pure Java app, tested using Java 1.7. Multithreaded, high performance.
+
+Features
+---------------
+Log2Graphite supports:
+* realtime metrics upload with 1 minute granularity
+* customs access.log format. It is configurable using apache / nginx style
+* real time log parsing
+* .gz format for non-realtime parsing
+* S3 Amazon storage for non-realtime parsing
+
+Metrics supported
+---------------
+* total requests counter
+* response and upstream time (min / max / avg / stdev / 99%)
+* response code
+* data size
+* GET/POST/OTHER counters
+* specific metrics for my application, likely nobody need it 
+
 
 Usage
 ---------------
 ```
 usage: Log2Graphite -f <filepath> [ options ]
  -atime <aggregate_time>   aggregate metric timeout in seconds. default is 60
- -c <config>               path to config file
- -f <filepath>             path to log file
- -h <host>                 Graphite host IP
- -notail                   parse single file without tail
- -start                    tail log from start. without option application start tail log file from end
- -t <arg>                  number of parsers. by default is 1 parser
+ -c <config>               path to config file (for custom access.log format)
+ -f <filepath>             path to log file (local or S3)
+ -h <host>                 Graphite host IP. default is not upload metrics to graphite
+ -p <port>                 Graphite port. default is 2003
+ -notail                   parse single file from start without tail (non-realtime parsing)
+ -start                    for realtime parsing only: tail log from start. default is to start parsing from the end
+ -t <arg>                  number of parsers. default is 1 parser
  -key <AWS access key>     S3 access key
  -secret <AWS secret key>  S3 secret key
 ```
@@ -50,7 +79,7 @@ Default access.log format
 
 Logging customization
 ---------------------
-Applications use Log4j. By default logging enabled to stdout
+Used Log4j. By default logging enabled to stdout
 ```
 # Root logger option
 log4j.rootLogger=INFO, stdout
