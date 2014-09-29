@@ -11,9 +11,9 @@ Sometimes you want to parse logs (maybe in realtime), retrieve some custom metri
 For log parsing could be used Logstash, which has plugin for uploading metrics to Graphite.
 Such configuraton works fine for most applications.
 
-But not for me. I realized than parsing 100G access.log takes too mutch time. And realtime acccess.log parsing takes too mutch CPU cores for QPS rates 5K and more.
+But not for me. I realized that parsing 100G access.log takes too mutch time. And realtime acccess.log parsing takes too mutch CPU cores for QPS rates 5K and more.
 
-Log2Graphite app is pure Java app, tested using Java 1.7. Multithreaded, high performance.
+Log2Graphite app is pure Java app, tested with Java 1.7. Multithreaded, high performance.
 
 Features
 ---------------
