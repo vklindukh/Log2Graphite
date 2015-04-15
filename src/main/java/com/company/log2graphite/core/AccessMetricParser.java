@@ -72,10 +72,10 @@ public class AccessMetricParser {
                 if (request_allowed(requestHTTP)) {
                     metric.setRequestsTaken(1);
                     if (logFormat.containsKey("request_time")) {
-                        metric.setRequest_time(Float.parseFloat(matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("request_time")].replace("\"", "").replace("'", "")));
+                        metric.setRequest_time(Float.parseFloat(lastField(matchedField[logFormat.get("request_time")]).replace("\"", "").replace("'", "").equals("-") ? "0" : lastField(matchedField[logFormat.get("request_time")]).replace("\"", "").replace("'", "")));
                     }
                     if (logFormat.containsKey("upstream_time")) {
-                        metric.setUpstream_time(Float.parseFloat(matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "").equals("-") ? "0" : matchedField[logFormat.get("upstream_time")].replace("\"", "").replace("'", "")));
+                        metric.setUpstream_time(Float.parseFloat(lastField(matchedField[logFormat.get("upstream_time")]).replace("\"", "").replace("'", "").equals("-") ? "0" : lastField(matchedField[logFormat.get("upstream_time")]).replace("\"", "").replace("'", "")));
                     }
                 }
                 if (logFormat.containsKey("code")) {
@@ -105,6 +105,15 @@ public class AccessMetricParser {
 
     public ArrayList<String> getAllowedRequests() {
         return allowedRequests;
+    }
+
+    private String lastField(String s) {
+        if (s.indexOf(" ") > 0) {
+            String[] fields = s.split(" ");
+            return fields[fields.length - 1];
+        } else {
+            return s;
+        }
     }
 
     private boolean request_allowed(String request) {
